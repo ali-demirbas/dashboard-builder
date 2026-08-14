@@ -1,0 +1,37 @@
+{
+  "name": "dashboard-builder",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+
+  "// why this exists": [
+    "CI runs the validator scripts on Python 3.12 and lints the shell entry",
+    "point with shellcheck. A contributor whose local Python is older, or who",
+    "has no shellcheck, finds that out from a red build rather than from their",
+    "own terminal. This container is the same two things, nothing more — the",
+    "validator scripts are stdlib-only, so there are no runtime dependencies",
+    "to install."
+  ],
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": false,
+      "upgradePackages": true
+    }
+  },
+
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y shellcheck",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "timonwong.shellcheck",
+        "davidanson.vscode-markdownlint"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    }
+  },
+
+  "remoteUser": "vscode"
+}
