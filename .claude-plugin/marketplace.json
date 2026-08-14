@@ -1,0 +1,13 @@
+{
+  "name": "dashboard-builder",
+  "owner": {
+    "name": "Ali Demirbaş"
+  },
+  "plugins": [
+    {
+      "name": "dashboard-builder",
+      "source": "./",
+      "description": "Marketing & growth dashboard builder: turns fragmented data (GA4, Adjust, AppsFlyer, ad platforms, CRM/ESP, e-commerce) into KPI diagnosis, cross-channel comparability checks, and executive dashboard or presentation output."
+    }
+  ]
+}
