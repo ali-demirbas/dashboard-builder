@@ -2,8 +2,8 @@
 # Repo consistency validation for dashboard-builder.
 #
 # Single entry point: frontmatter validity, internal link integrity, the
-# SKILL.md references table against what's actually on disk, the plugin
-# manifest parsing as JSON, and whether dashboard-builder-consolidated.md
+# SKILL.md references table against what's actually on disk, both plugin
+# manifests parsing as JSON, and whether dashboard-builder-consolidated.md
 # is stale relative to MAINTENANCE-LEDGER.md's own tracking.
 set -uo pipefail
 
@@ -21,13 +21,15 @@ python3 scripts/check_frontmatter.py skills/dashboard-builder/SKILL.md || FAIL=1
 echo "== 2. Internal links + references table =="
 python3 scripts/check_links.py || FAIL=1
 
-echo "== 3. Plugin manifest parses =="
-if python3 -c "import json; json.load(open('.claude-plugin/plugin.json'))" 2>/dev/null; then
-  echo "  ok: .claude-plugin/plugin.json parses"
-else
-  echo "FAIL: .claude-plugin/plugin.json is not valid JSON"
-  FAIL=1
-fi
+echo "== 3. Plugin manifests parse =="
+for m in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
+  if python3 -c "import json; json.load(open('$m'))" 2>/dev/null; then
+    echo "  ok: $m parses"
+  else
+    echo "FAIL: $m is not valid JSON"
+    FAIL=1
+  fi
+done
 
 echo "== 4. Shipped content carries no instruction-like text =="
 # research/raw/ and the test suite get read back into context at runtime —
