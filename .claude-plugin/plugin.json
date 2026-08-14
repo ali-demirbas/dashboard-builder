@@ -1,0 +1,23 @@
+{
+  "name": "dashboard-builder",
+  "version": "0.1.0",
+  "description": "Marketing & growth dashboard builder for Claude Code. Turns fragmented data from Adjust, AppsFlyer, GA4, Firebase, Braze, Insider, Déngage, Klaviyo, Iterable, and Google/Meta/TikTok/LinkedIn Ads into KPI diagnosis, cross-channel comparability checks, and executive dashboard or presentation output.",
+  "author": {
+    "name": "Ali Demirbaş"
+  },
+  "homepage": "https://github.com/ali-demirbas/dashboard-builder",
+  "repository": "https://github.com/ali-demirbas/dashboard-builder",
+  "license": "MIT",
+  "keywords": [
+    "dashboard-builder",
+    "growth-marketing",
+    "marketing-analytics",
+    "kpi",
+    "attribution",
+    "ga4",
+    "unit-economics",
+    "dashboard",
+    "claude-code",
+    "claude-skills"
+  ]
+}

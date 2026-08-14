@@ -1,0 +1,8 @@
+# Internal working documents — not part of the published skill
+# These carry which external product/AI a finding came from; kept out of the repo.
+RESEARCH-REPORT-*.md
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
