@@ -1146,6 +1146,10 @@ Most charts are OBSERVATION or INTERPRETATION, and that's correct.
 
 **Accessibility, non-negotiable:** a legend whenever ≥2 series; status/identity never color-alone; a plain data table exists for every chart. The cohort heatmap: build as an actual `<table>` with cell background-color.
 
+## Visual system: Lab UI
+
+Every dashboard renders in **Lab UI**, the visual language shared by all the Lab tools and alidemirbas.com.tr/lab: stone ink on white paper, one brand blue (`#2F6BFF`) for what is chosen or actionable, one sans family (Inter, system sans fallback), plain-case labels, rounded tiles, pill controls. The kit ships as `skills/dashboard-builder/references/lab-ui.css`: inline it verbatim in the artifact's `<style>` between `/* lab-ui:begin */` and `/* lab-ui:end */`, never link it, never edit its tokens, never add a second palette; `class="lab"` on `<body>`, content in `.lab-page`. Mapping: page head `.lab-eyebrow` + `.lab-title` + `.lab-lede`; section headings `.lab-h2` (no uppercase tracked labels); KPI card `.lab-tile .lab-kpi` (`.lab-kpi-value` above `.lab-kpi-label`, delta `.lab-delta` + status tint); the 🔴🟠🟡🟢 scale is `lab-t-bad` / `lab-t-warn` / `lab-t-watch` / `lab-t-good` everywhere; chart card `.lab-tile` with `.lab-h3`, a `.lab-small .lab-subtle` scope line, caption `.lab-muted`, chip legend; series `var(--lab-series-1…6)` in order, single series in `--lab-series-1`, sequential heatmaps on `--lab-primary-50`→`--lab-primary-700`, gridlines `var(--lab-line)`; tables `.lab-table-wrap` + `.lab-table`, in-cell bars `.lab-meter`; alerts and insights `.lab-note`; filters `.lab-select` / `.lab-input` / `.lab-seg`. SVG colours and text go through the CSS variables so the kit's dark theme works.
+
 ## Filter system
 
 A filter is a **stated context line**, not a live control. Never ship a filter widget that doesn't actually filter anything.
@@ -1320,7 +1324,7 @@ Closing, dark background. Definition grid — Period, Comparison, primary metric
 
 **Generate the actual `.pptx` file using native slide shapes and text boxes** — not an HTML-to-PPTX conversion, not exported images pretending to be a deck. Canvas: 16:9 widescreen (13.333in × 7.5in).
 
-**Reuse the design system's exact tokens** — same colors, type scale, spacing as Part 6 draws from.
+**Reuse the design system's exact tokens**: Lab UI, the same colours, type scale and spacing Part 6 §Visual system draws from (ink-950 `#1F1C1B` on white, brand `#2F6BFF`, the series order, the four status colours; Inter).
 
 **Font caveat:** PPTX font embedding is weaker than HTML — a recipient without the deck's font installed sees a substitute, which can shift layout. State this limitation rather than presenting the result as pixel-identical to any HTML reference.
 

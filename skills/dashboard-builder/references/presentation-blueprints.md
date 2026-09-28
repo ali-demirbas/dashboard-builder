@@ -39,7 +39,7 @@ Six reusable layouts. A slide's content type determines its layout — never pic
 
 | Layout | Use when | Anatomy |
 |---|---|---|
-| **Cover** | Always, slide 1 | Dark ground (`#0E1116` / `#F6F6F4` text). Eyebrow (skill name, small caps) top-left. Title (very large, 800 weight) + period subtitle, vertically centered. Bottom row: "Prepared from" + source list (left), generation date (right). Typography only — no chart, no chrome |
+| **Cover** | Always, slide 1 | Dark ground (`#1F1C1B` / `#F5EDE9` text, Lab UI ink-950 / ink-100). Eyebrow (skill name, small caps) top-left. Title (very large, 800 weight) + period subtitle, vertically centered. Bottom row: "Prepared from" + source list (left), generation date (right). Typography only — no chart, no chrome |
 | **Executive Summary** | Always, slide 2 | Eyebrow. Left column: one-sentence headline stating the period's dominant finding, anchored above 3 numbered stat readouts (delta-colored) for the 3 KPIs that matter most. Right column: a bordered card, "Key Takeaways," 1–2 short strategic sentences, not bullet fragments |
 | **A — Big number + evidence** | One dominant KPI's trend is the finding | Headline sentence stating the trend in words. Huge number + delta + "vs previous period" inline beneath it. A single-axis trend chart below, same rules as the dashboard's trend chart (never dual-axis, one annotation only if a real cause is known — never invented). One caption sentence closing it out |
 | **B — Chart + takeaway card** | Any chart genuinely needs an adjacent interpretation — funnel, cohort heatmap, scatter, quadrant, or a chart the headline alone doesn't fully explain | Headline sentence. Two-column: chart left (60%), a bordered "Key Takeaway" card right (40%) with one interpretive sentence + 1–2 supporting stat rows. This is the general-purpose layout — most chart types not covered by A, C, or E land here rather than getting a bespoke layout invented for them |
@@ -50,9 +50,9 @@ Six reusable layouts. A slide's content type determines its layout — never pic
 
 | Slide | Eyebrow color | Background | Extra element |
 |---|---|---|---|
-| Key Risk | Danger (`#A11D1D`) | Light | "Priority: High" pill, top-right |
-| Key Opportunity | Success (`#156143`) | Light | None — the opportunity framing itself carries the tone |
-| Key Insight | Info/lilac (`#8FA3FF`) | **Dark** (`#0E1116`) — the only content slide besides Cover/Methodology that inverts | "Confidence: [level]" in the footer instead of a source line |
+| Key Risk | Danger (`#C20039`, Lab UI rose-700) | Light | "Priority: High" pill, top-right |
+| Key Opportunity | Success (`#007956`, Lab UI emerald-700) | Light | None — the opportunity framing itself carries the tone |
+| Key Insight | Info (`#AECBFF`, Lab UI primary-300) | **Dark** (`#1F1C1B`) — the only content slide besides Cover/Methodology that inverts | "Confidence: [level]" in the footer instead of a source line |
 
 All three: eyebrow → huge headline (the finding, stated as a full sentence, not a chart title) → one supporting paragraph → 2–3 stat readouts in a row, each with its own small label. **No chart on a spotlight slide** — the number and the sentence carry it; a chart here would compete with the one thing the slide exists to say.
 
@@ -142,9 +142,9 @@ A deck without this slide has hidden its own uncertainty in a format that discou
 
 **Generate the actual `.pptx` file using the `anthropic-skills:pptx` skill's own toolkit** — native slide shapes and text boxes (python-pptx or equivalent), not an HTML-to-PPTX conversion and not a set of exported images pretending to be a deck. Canvas: 16:9 widescreen (13.333in × 7.5in, matching the 1920×1080 reference proportions).
 
-**Reuse the design system's exact tokens** — same colors, same type scale ratios, same spacing logic as `dashboard-blueprints.md` draws from. Do not invent a separate visual language for the deck; a reader seeing both outputs from one request should recognize them as the same product.
+**Reuse the design system's exact tokens**: Lab UI, the same colours, type scale ratios and spacing logic `dashboard-blueprints.md` §Visual system draws from (`references/lab-ui.css` holds the values: ink-950 `#1F1C1B` text on white, brand blue `#2F6BFF`, the series order, the four status colours). Do not invent a separate visual language for the deck; a reader seeing both outputs from one request should recognize them as the same product.
 
-**Font caveat, stated honestly, not assumed away:** the HTML reference embeds Plus Jakarta Sans directly, which a browser renders reliably. PPTX font handling is weaker — python-pptx does not embed fonts into the file by default, so a recipient without Plus Jakarta Sans installed will see PowerPoint's substitute font, which can shift line breaks and spacing away from the designed layout. State this limitation when delivering a deck rather than presenting the rendered result as pixel-identical to the HTML reference. If font-embedding is genuinely required, it needs direct manipulation of the PPTX's underlying XML/font-table — treat that as an explicit ask, not a default.
+**Font caveat, stated honestly, not assumed away:** Lab UI sets Inter, falling back to the system sans where Inter is not installed. PPTX font handling is weaker — python-pptx does not embed fonts into the file by default, so a recipient without Inter installed will see PowerPoint's substitute font, which can shift line breaks and spacing away from the designed layout. State this limitation when delivering a deck rather than presenting the rendered result as pixel-identical to the HTML reference. If font-embedding is genuinely required, it needs direct manipulation of the PPTX's underlying XML/font-table — treat that as an explicit ask, not a default.
 
 **Real charts are native chart objects, not hand-drawn shapes standing in for one.** A native PPTX chart carries an embedded data workbook — the same reason "the chart comes from Excel" reads as normal to anyone who's built a deck by hand — and stays editable (right-click → Edit Data) in a way a rectangle sized to look like a bar never does. Use the toolkit's native chart API (`addChart()` in pptxgenjs) for every layout that's actually charting a data series, not text-and-numbers:
 
