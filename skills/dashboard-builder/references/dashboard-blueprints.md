@@ -220,6 +220,27 @@ Most charts on a well-built dashboard are OBSERVATION or INTERPRETATION, and tha
 
 **Accessibility, non-negotiable:** a legend whenever a chart has ≥2 series (none needed for a single series — the caption already names it); status or series identity is never color-alone, pair it with a label or icon; a plain data table exists somewhere in the artifact for every chart, as a screen-reader and copy-paste fallback; the artifact must still be legible with the color signal stripped out entirely. The cohort heatmap is the one component where the fallback is free: build it as an actual `<table>` with cell background-color for the heat, not a `<div>` grid — it renders identically and the accessibility fallback is the same element, not a second one to maintain.
 
+## Visual system: Lab UI
+
+Every dashboard this skill renders uses **Lab UI**, the visual language shared by all the Lab tools and their home, alidemirbas.com.tr/lab: stone ink on white paper, one brand blue for what is chosen or actionable, one sans family, plain-case labels, rounded tiles and pill controls. The spec above says what each component contains; this section fixes what it looks like, so two runs of this skill (and this skill next to any other Lab tool) read as the same product instead of each run inventing a palette.
+
+**Inline the kit, don't restyle it.** Copy `references/lab-ui.css` verbatim into the artifact's `<style>`, between a `/* lab-ui:begin */` and a `/* lab-ui:end */` line, then add only this dashboard's own layout rules after it. Never link it (the artifact renders offline and loads nothing third-party), never edit its tokens, never add a second palette. Put `class="lab"` on `<body>` and the content in a `.lab-page` wrapper.
+
+| Dashboard part | Lab UI |
+|---|---|
+| Page head | `.lab-eyebrow` (source and period, plain case) above `.lab-title`, then a `.lab-lede` sentence |
+| Section heading | `.lab-h2`, plain case: no uppercase tracked labels, no trailing rules |
+| KPI card | `.lab-tile .lab-kpi`: `.lab-kpi-value` above `.lab-kpi-label`, the delta as `.lab-delta` with a status tint |
+| Status (🔴 🟠 🟡 🟢) | `lab-t-bad`, `lab-t-warn`, `lab-t-watch`, `lab-t-good`: the same four everywhere the scale appears (cards, alerts, insights, tables) |
+| Chart card | `.lab-tile` with a `.lab-h3` title, a `.lab-small .lab-subtle` scope line, the caption as `.lab-muted`, legend as chips above the plot |
+| Chart colours | series in order `var(--lab-series-1)` … `var(--lab-series-6)`; a single series in `--lab-series-1`; a sequential heatmap on the brand ramp (`--lab-primary-50` light to `--lab-primary-700` dark); gridlines `var(--lab-line)`, axis text `var(--lab-text-subtle)` at 12px |
+| Table | `.lab-table-wrap` + `.lab-table`; an in-cell bar is a `.lab-meter` |
+| Alert, insight, action | `.lab-note` with a small status icon tile |
+| Filters | `.lab-select`, `.lab-input`; a period switch is a `.lab-seg` |
+| Badge | `.lab-badge` + a tint class |
+
+SVG charts take their colours through the CSS variables (`style="fill:var(--lab-series-1)"`, `stroke="var(--lab-line)"`) and their text through `font-family: var(--lab-font)`, so the dark theme the kit ships works without a second drawing. The kit already sets tabular figures for tables and `.num`; KPI values and axis labels should use them too.
+
 ## Filter system
 
 Where data supports it: Date, Channel, Campaign, Platform, OS, Country, Product, Customer segment, Acquisition source, Cohort. Filters affect all relevant components consistently — but in the rendered artifact (see "Rendering mechanism" below), a filter is a **stated context line** ("Showing: Jan–Jun 2026, all channels, TR market"), not a live control. Never ship a filter widget that doesn't actually filter anything.

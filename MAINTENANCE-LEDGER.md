@@ -5,13 +5,13 @@ Not part of the skill's runtime — a bakım/audit tracking dosyası. Amaç toke
 **Operasyonel kural (2026-08-14'ten itibaren):** `dashboard-builder-consolidated.md` artık her modül düzenlemesinden sonra otomatik yeniden üretilmiyor. Sadece Ali paylaşım/snapshot için istediğinde build edilir. Günlük geliştirme akışı: modül düzenle → test/audit et → tekrarla → **sadece release anında** "consolidated üret."
 
 ```yaml
-current_pass: 21
+current_pass: 22
 
 modules:
   SKILL.md:
-    last_changed_pass: 17
-    last_audited_pass: 17
-    status: PASS
+    last_changed_pass: 22
+    last_audited_pass: 22
+    status: PASS. Pass 22: the dashboard-blueprints row in the references table names the Lab UI visual system and its kit file.
   data-quality-gate.md:
     last_changed_pass: 21
     last_audited_pass: 21
@@ -36,9 +36,9 @@ modules:
     last_audited_pass: 17
     status: PASS
   dashboard-blueprints.md:
-    last_changed_pass: 21
-    last_audited_pass: 21
-    status: PASS. Pass 21: added a Responsive layout paragraph to
+    last_changed_pass: 22
+    last_audited_pass: 22
+    status: PASS. Pass 22: new §Visual system: Lab UI. The spec fixed every component's content but no colour, font or surface, so each run chose its own look; it now inlines references/lab-ui.css (the Lab tools' shared kit, verbatim, never linked) and maps every dashboard part to a kit class, the 🔴🟠🟡🟢 scale to four fixed tints, and chart series to a fixed order. Verified by rendering the same synthetic dataset from the old and the new spec. Pass 21: added a Responsive layout paragraph to
       §Rendering mechanism — SVG viewBox/scaling requirement + a stated
       ~768px reflow breakpoint (KPI strip to 2 cols, chart row to 1 col,
       detail table horizontal-scroll-in-container). Previously
@@ -47,9 +47,9 @@ modules:
       "data-volume rendering strategy" finding was reviewed and
       deliberately not applied — Ali's call, not a rejection on merits.
   presentation-blueprints.md:
-    last_changed_pass: 20
-    last_audited_pass: 20
-    status: PASS. Pass 19 carried 1 open correction (real 8-slide deck
+    last_changed_pass: 22
+    last_audited_pass: 22
+    status: PASS. Pass 22: "reuse the design system's exact tokens" pointed at tokens dashboard-blueprints.md never defined, and the font caveat named a typeface no file specified; both now name Lab UI, and the cover, spotlight and insight colours move to its values. PASS. Pass 19 carried 1 open correction (real 8-slide deck
       built for Numerspace.com via anthropic-skills:pptx/pptxgenjs;
       structural validation passed, content QA clean, visual QA caught
       2 layout defects both fixed; a 3rd — ranked-comparison slide used
@@ -116,14 +116,15 @@ decisions_deferred_not_findings:
       rediscovered as if new.
 
 last_consolidated_build:
-  pass: 21
-  date: 2026-08-14
-  word_count: 22825
+  pass: 22
+  date: 2026-09-28
+  word_count: 23030
   note: >
-    Regenerated directly (no subagent) to keep cost low. Pass-by-pass
-    changelog intentionally dropped from this build per Ali's request —
-    word count is lower than the prior 34,543 mostly because of that, not
-    because content was cut. Re-add the changelog only if asked.
+    Targeted sync, not a full regeneration: Pass 22's two source edits
+    (dashboard-blueprints.md §Visual system, presentation-blueprints.md
+    token line) were carried into Part 6 and Part 7 by hand; every other
+    Part is byte-identical to the Pass 21 build. Regenerate in full at
+    the next release as usual.
 ```
 
 **Nasıl okunur:** `last_changed_pass > last_audited_pass` olan bir modül, son değişiklikten sonra tam denetlenmemiş demektir — sıradaki audit'in önceliği odur. `last_consolidated_build.pass`'ten büyük `last_changed_pass`'i olan herhangi bir modül varsa, consolidated dosya güncel değildir — release öncesi yeniden üretilmeli.
