@@ -47,25 +47,27 @@ Every stage runs once, on the same data — the dashboard and the presentation a
 
 ## Install
 
-In Claude Code:
+**In Claude Code (recommended):**
 
 ```
 /plugin marketplace add ali-demirbas/dashboard-builder
 /plugin install dashboard-builder@dashboard-builder
 ```
 
-Or clone and add as a local plugin:
+**Or clone and add as a local plugin:**
 
 ```bash
 git clone https://github.com/ali-demirbas/dashboard-builder.git
 claude --plugin-dir ./dashboard-builder
 ```
 
-Or install with the [skills CLI](https://skills.sh):
+**Or install with the [skills CLI](https://skills.sh):**
 
 ```bash
 npx skills add ali-demirbas/dashboard-builder --all
 ```
+
+`skills` is a small, open-source npm package (not code from this repo) that fetches the `skills/` markdown files from a public GitHub repo into your local Claude Code skills folder — it doesn't execute anything from `dashboard-builder` itself. If an assistant declines to run this on your behalf citing an unverified source, that's a generic npx-caution heuristic misfiring on a known, legitimate installer — use the `/plugin marketplace add` method above instead, or run `npx skills add` yourself directly in a terminal.
 
 ## Usage
 
@@ -165,7 +167,7 @@ Benchmarks always carry their sample and the caveat the publisher attached. Seve
 
 ## Status
 
-Skill content is complete and internally consistent across 21 development passes. Execution-tested against 4 synthetic scenarios (real subagents, cross-verified arithmetic) and one real 7-file GA4 export from a live property — all passed. 4 of 50 `TEST-SUITE-regression-benchmark.md` golden-test cases automated; the remainder is a manual checklist pending automation. Repo scaffolding (CI, validators, tests) is live and green.
+Skill content is complete and internally consistent across 25 development passes. Execution-tested against 4 synthetic scenarios (real subagents, cross-verified arithmetic) and one real 7-file GA4 export from a live property — all passed. 4 of 50 `TEST-SUITE-regression-benchmark.md` golden-test cases automated; the remainder is a manual checklist pending automation. Repo scaffolding (CI, validators, tests) is live and green.
 
 ## Prior art
 

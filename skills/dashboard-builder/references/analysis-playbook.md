@@ -32,6 +32,7 @@ Identify: date fields, channel/campaign fields, source/medium, country, platform
 - **PDF exports.** Extract tables first; if the PDF is a rendered dashboard screenshot or a narrative report rather than a real table, state that explicitly ("this PDF has no extractable table — figures below are read off the page, not parsed, and should be spot-checked") rather than silently treating OCR'd/read numbers as equivalent to a parsed export. **Multi-page PDF tables commonly repeat their header row on every page** — check that a repeated header hasn't been ingested as a data row (a giveaway: a "row" whose values are all column-name-shaped strings, not numbers).
 - **Duplicate or multi-row headers.** Two columns sharing one name (e.g. two "Clicks" columns — one Search, one Display, a real Google Ads export pattern) must be disambiguated before mapping, not silently merged or overwritten by whichever one a naive read keeps last. A header spanning two rows (category on row 1, metric name on row 2) needs both rows read together — state which convention you used if it wasn't obvious from the file.
 - **Multi-sheet Excel files.** Check every sheet, not just the first — a common failure is a "Summary" sheet with pre-aggregated (and sometimes stale or differently-filtered) numbers sitting in front of the real per-row data on another tab.
+- **Multi-table CSV exports.** Some tools stack several distinct breakdowns into one CSV (a GA4 Explore export can hold a traffic table, a landing-page table, and a cohort table back to back, each with its own header row and blank-line separators). Detect table boundaries before parsing — a header row appearing mid-file is a new table, not a data row — and register each sub-table as its own source. Every sub-table then counts separately for the Coverage integrity check (`dashboard-blueprints.md` §Dashboard QA gate): one that was read but never used or named is a silent omission.
 - **Locale-specific number formats.** `1.234,56` (comma decimal, dot thousands — standard in Turkey and much of Europe) vs `1,234.56` (US/UK). Misreading one for the other silently shifts every value by a factor of ~1000. If a column's values look implausibly large or small, check the locale before assuming a data error.
 - **Merged cells, header rows not on row 1, hidden sheets/rows.** State what you assumed about header location if it wasn't obvious.
 - **Non-UTF-8 encoding.** A CSV exported from Excel or an older BI tool routinely carries Latin-1/Windows-1252 bytes (curly quotes, accented city/region names, non-breaking spaces) that a strict UTF-8 read chokes on mid-file, not at row 1 — the read can succeed for thousands of rows before hitting the first offending byte. Don't treat a decode error as "corrupt file"; retry with a Latin-1/`cp1252` fallback before concluding anything's wrong, and note which encoding was actually used.
@@ -51,7 +52,7 @@ Do not overinterpret a single-period change. Distinguish: **Level → Change →
 
 **Concentration risk — check before interpreting any trend as broad-based.** When any single dimension member (a channel, campaign, customer, or product) accounts for ≥50% of a metric's total in the window being analyzed, flag it explicitly before writing up a trend on that metric: "X% of this metric's movement traces to a single contributor — the trend is not broad-based." A trend driven by one contributor is fragile in a way a broad-based trend isn't, and reporting the aggregate move without naming the concentration risks implying stability that isn't there. Classify the flag FACT or RISK per the skill's existing labeling, not folded silently into the trend narrative.
 
-**Unequal-length or partial-period comparisons — check before any MoM/WoW/YoY.** Confirm both periods cover the same number of days (and, where weekly seasonality matters, the same day-of-week composition) before comparing them as if the comparison were normal. The single most common real-world instance: a dashboard requested mid-month, where "this month" is a partial period (e.g. the 1st–15th) and gets compared raw against a full prior month (the 1st–31st) — this reads as a sharp decline that is actually just fewer elapsed days, not a demand change. A partial current period must be labeled partial and compared against the **same elapsed-day window** of the prior period (1st–15th vs. 1st–15th), or — if a full-period comparison is genuinely needed — annotated with a run-rate projection explicitly labeled **Derived**, stating the method, never presented as a raw completed-period comparison.
+**Unequal-length or partial-period comparisons — check before any MoM/WoW/YoY.** Confirm both periods cover the same number of days (and, where weekly seasonality matters, the same day-of-week composition) before comparing them as if the comparison were normal. The typical real-world instance: a dashboard requested mid-month, where "this month" is a partial period (e.g. the 1st–15th) and gets compared raw against a full prior month (the 1st–31st) — this reads as a sharp decline that is actually just fewer elapsed days, not a demand change. A partial current period must be labeled partial and compared against the **same elapsed-day window** of the prior period (1st–15th vs. 1st–15th), or — if a full-period comparison is genuinely needed — annotated with a run-rate projection explicitly labeled **Derived**, stating the method, never presented as a raw completed-period comparison.
 
 ## Funnel analysis
 
@@ -128,15 +129,16 @@ implying the diagnosis is complete.
 
 This replaces "I noticed X and Y moved together, so X caused Y" with a structure that forces alternative explanations onto the table before landing on one — the same discipline as the anomaly-triage list in `data-quality-gate.md`, applied to any metric move, not just anomalies.
 
-**What "Confidence: Medium" actually means — don't leave it as a vibe.** Base it on the weakest of these three, not an average, since one bad dimension undermines the whole diagnosis:
+**What "Confidence: Medium" actually means — don't leave it as a vibe.** Base it on the weakest of these four, not an average, since one bad dimension undermines the whole diagnosis. (A BLOCKER on an input doesn't produce a low-confidence diagnosis — it produces no diagnosis: the metric isn't computed and the observation is SUPPRESSed by candidate-engine question 1 below.)
 
 | | Low | Medium | High |
 |---|---|---|---|
-| **Data quality** | A BLOCKER touches an input | Only WARNING-level issues, if any | Clean, or only INFO-level notes |
-| **Evidence tier** (`comparability-rules.md` §2.6) | E0/E1 only | E2/E3 | E4/E5, or an E1/E2 pattern with no plausible confound named |
+| **Data quality** | A WARNING on an input that materially moves the figure | WARNING-level issues that don't move the figure materially | Clean, or only INFO-level notes |
+| **Evidence tier** (`comparability-rules.md` §2.6) | E0/E1 only | E2/E3, or an E1/E2 pattern with no plausible confound named | E4/E5 only — this is the same bar the Evidence Ladder sets for a causal sentence; a "why did it move" diagnosis is a causal claim and doesn't get High on correlational evidence |
 | **Comparability** (`comparability-rules.md` "How to use this file") | A key input is NOT_COMPARABLE | CONDITIONAL or NORMALIZABLE | DIRECT |
+| **Alternative explanations** | A major competing hypothesis is untested | Only minor alternatives untested | Every plausible alternative tested and ruled out |
 
-State which dimension is holding the confidence level down (as in the worked example above: "H3 remains untested" is what keeps this at Medium, not High) — a confidence label without a stated reason is not more useful than no label at all.
+State which dimension is holding the confidence level down (as in the worked example above: "H3 remains untested" is the Alternative-explanations row keeping it at Medium, not High) — a confidence label without a stated reason is not more useful than no label at all.
 
 ## Anomaly detection
 
@@ -148,40 +150,44 @@ Do not auto-label an anomaly a problem. **First test the alternative explanation
 
 `SKILL.md` step 6 caps the first-turn output at 5-10 prioritized observations, and Operating Principle 8 names the three dimensions that set priority. That states the *criteria* but not the *procedure* — which leaves the actual selection as an unstated judgment call, exactly the kind of surface-level shortcut this skill's Overview says it exists to refuse.
 
-**This is deliberately a rule-based gate, not a numeric score.** A weighted 0-100 composite over "business impact" was considered and rejected more than once in this skill's development, for a real reason: it manufactures precision that the inputs don't have, and a single number hides which dimension actually drove it. What's needed isn't a score, it's a sequence of yes/no questions with a stated verdict. Run every candidate observation through all eight, in order — the first failure decides the outcome:
+**This is deliberately a rule-based gate, not a numeric score.** A weighted 0-100 composite over "business impact" was considered and rejected more than once in this skill's development, for a real reason: it manufactures precision that the inputs don't have, and a single number hides which dimension actually drove it. What's needed isn't a score, it's a sequence of yes/no questions with a stated verdict. Run every candidate observation through all eight, in order. **A failure on 1, 2, or 3 is terminal — stop there, the verdict is set.** Questions 4–8 are all evaluated regardless of each other's answers, and the label block below reads them jointly — a "no" on 4, 6, or 7 changes how the finding is stated or capped, it doesn't end the evaluation:
 
 | # | Question | If no |
 |---|---|---|
 | 1 | **Is the change real?** Does it clear the data-quality gate — no BLOCKER on its inputs, not an artifact of a missing day, a totals row, or a partial period? | **SUPPRESS** — this is a data finding, not a business finding. Report it as a quality issue instead |
-| 2 | **Is it statistically supportable?** Does the denominator carry enough volume for the move to mean anything (see "Statistical sufficiency" below)? | **SUPPRESS** — a 0.4pt CTR move on 100 impressions is noise wearing a percentage sign |
-| 3 | **Is it material?** Does the magnitude matter against the business's own scale — not just against zero? | **LOW** at most, and usually SUPPRESS. A 2% move on a metric representing 0.3% of revenue is arithmetic, not news |
-| 4 | **Is it broad or concentrated?** Does one dimension member drive ≥50% of it (see Concentration risk above)? | Not a suppression — but the concentration **is** the finding, and must be stated as such rather than reported as a broad-based move |
+| 2 | **Is it statistically supportable?** For a rate change: does the two-proportion test / CI on the difference exclude zero? For a correlation: is n adequate and the p-value/CI computed? (see "Statistical sufficiency" below) | **SUPPRESS** — a 0.4pt CTR move on 100 impressions is noise wearing a percentage sign. **Third answer, UNTESTED:** if no compute tool is available to run the test, don't guess yes or no — continue, cap the label at MEDIUM, and mark the figure "directional, not statistically tested" |
+| 3 | **Is it material?** Does the magnitude matter against the business's own scale — not just against zero? | **SUPPRESS** — a 2% move on a metric representing 0.3% of revenue is arithmetic, not news. (A move that is real and small but genuinely worth a line as context lands at LOW via question 8, not here) |
+| 4 | **Is it broad-based?** I.e. does **no** single dimension member drive ≥50% of it (see Concentration risk above)? | Not a suppression — but the concentration **is** the finding, and must be stated as such rather than reported as a broad-based move |
 | 5 | **Is it economically important?** Can it be opportunity-sized, or tied to spend, margin, or retained revenue? | **MEDIUM** at most — an interesting movement with no economic handle isn't a critical one |
-| 6 | **Is there a plausible alternative explanation not yet ruled out?** Run the anomaly-triage list and the hypothesis-elimination pattern above | Keep it, but **downgrade one level** and state the untested alternative — a finding with an open competing explanation is not CRITICAL |
+| 6 | **Have all plausible alternative explanations been ruled out?** Run the anomaly-triage list and the hypothesis-elimination pattern above | Keep it, but it **cannot be CRITICAL** (HIGH at most — see the label block) and the untested alternative is stated explicitly — a finding with an open competing explanation is not CRITICAL |
 | 7 | **Is the evidence sufficient for the claim being made?** Grade it on the Evidence Ladder; a causal-sounding write-up needs E4/E5 | Keep the observation, **rewrite the claim** down to what the evidence supports. Never downgrade the evidence tier to fit the story |
 | 8 | **Is it actionable?** Is there a decision, test, or investigation this changes? | **MEDIUM/LOW** — real but not urgent. Genuine context and guardrail metrics live here legitimately |
 
 Then assign, and **name which question drove the label**:
 
 ```
-🔴 CRITICAL  — clears 1-3 and 5, actionable, evidence sufficient for the claim made,
-               no unresolved alternative explanation
-🟠 HIGH      — clears 1-3, actionable, but one of 6/7 is open (stated explicitly)
-🟡 MEDIUM    — real and supported, but not economically sized or not yet actionable
+🔴 CRITICAL  — clears 1-3 and 5, actionable, evidence sufficient for the claim made
+               (7 passed, or the claim was rewritten down to what it supports),
+               no unresolved alternative explanation (6 passed), statistically tested
+🟠 HIGH      — clears 1-3 and 5, actionable, but 6 is open (stated explicitly)
+🟡 MEDIUM    — real and supported, but not economically sized (5 failed), not yet
+               actionable (8 failed), or statistically UNTESTED (2 — no compute tool)
 🟢 LOW       — real, small, or context/guardrail rather than decision-driving
    SUPPRESS  — fails 1, 2, or 3. Not shown as a business observation at all
 ```
+
+(Question 7 never stays "open" in a delivered output — a claim the evidence can't support gets rewritten until it can, so 7 shapes the wording of the finding, not its label.)
 
 **SUPPRESS is the point of this engine, not a side effect.** A dashboard's quality is set as much by what it leaves out as by what it shows — an output padded with statistically meaningless moves reads as thorough and is actively worse than a short one, because it costs the reader the same attention per item.
 
 ### Statistical sufficiency — before any rate or change gets reported
 
-Question 2 above needs a concrete bar, not a feeling. Rates and rate *changes* are the common trap: a percentage looks equally authoritative at any sample size.
+Question 2 above needs a concrete bar, not a feeling — this is deliberately a decision rule, not a judgment call, so the same data doesn't get read as material in one pass and noise in the next.
 
-- **Rate metrics (CVR, CTR, open rate, retention, churn):** state the denominator alongside the rate, always. Where the denominator is small enough that the rate would move materially on a handful of events, say so and treat the figure as directional — "CTR 2.5% (n=100 impressions — a single click moves this by 1pt)" is honest; a bare "CTR 2.5%, up from 2.1%" at that volume is not.
-- **A change in a rate** needs more support than the rate itself. If a plausible re-run of the same period could produce the opposite direction purely from sampling, it is not a finding — it is noise. Where the volume is genuinely too low to distinguish the two, say that instead of reporting the direction.
-- **Correlations:** an R value computed over a handful of points is not evidence of anything, regardless of magnitude — state n alongside every correlation coefficient (and the Evidence Ladder tier, per `dashboard-blueprints.md`'s chart-form rule).
-- **Holdout and lift results:** already covered in `kpi-framework.md` §6 — a control group of a few dozen users produces an interval wide enough to contain zero.
+- **A change in a rate (CVR, CTR, open rate, retention, churn): run a real two-proportion test, don't eyeball it.** Where a code-execution tool is available (Operating Principle 11 — compute, don't estimate), compute an actual two-proportion z-test (or the equivalent confidence interval on the difference) on the before/after counts, not just the two percentages. State the result in plain terms — "CVR moved from 2.0% to 2.4% on n=800/n=820; the 95% CI on the difference includes zero, this is not statistically distinguishable from noise" is the bar. Do not report a rate change as a finding (candidate-engine question 2 → SUPPRESS) when the test says the interval crosses zero, regardless of how the raw percentages look.
+- **Correlations: state n and, where a compute tool is available, the actual p-value or confidence interval alongside R** — not R alone. An R computed over a handful of points is not evidence of anything, regardless of magnitude; a computed R with no p-value/CI reported is a half-finished statistical claim, not a conservative one.
+- **No compute tool available: don't invent a threshold, cap the claim instead.** If a code-execution tool isn't available to run the actual test, don't substitute an eyeballed judgment for it — apply Operating Principle 11's existing cap directly: state the limitation, answer candidate-engine question 2 as UNTESTED (not yes, not no), cap the label at MEDIUM, and report the rate/correlation as **directional only**, explicitly flagged as not statistically tested, rather than assigning it a confident CRITICAL/HIGH label either way. This keeps the SUPPRESS/downgrade decision tied to an actual test result whenever one can be run, and to an honest "untested" label when it can't — never to how convincing the raw percentages happen to look.
+- **Holdout and lift results:** already covered in `kpi-framework.md` §6 — a control group of a few dozen users produces an interval wide enough to contain zero; the same two-proportion-test discipline above applies there too when a compute tool is available.
 - **When the data can't support the test, say which test you'd have run** rather than silently skipping it or silently proceeding — same discipline as the anomaly scan's "insufficient history" statement.
 
 ## Data conflict resolution
