@@ -4,13 +4,13 @@ A second rendering of the **same analysis** that `dashboard-blueprints.md` rende
 
 ## Output format selection
 
-At `SKILL.md` step 6, alongside offering the fitting templates, ask which output format is wanted:
+`SKILL.md` step 6 is the canonical routing. This section says what each format is for.
 
 - **Dashboard** — the HTML artifact per `dashboard-blueprints.md`. Better for exploration, drill-down-by-scrolling, and a reader who wants the detail table and deep-dives available.
 - **Presentation** — a slide deck per this file, exported as PPTX. Better for a room, a stakeholder update, or anyone who wasn't in the room for the analysis and needs the narrative walked through in order.
 - **Both** — same underlying analysis, rendered twice. Build the dashboard's full component set first (it naturally produces more granular material — the detail table, every deep-dive), then select the subset of findings that clear the deck's tighter bar (below) for the presentation.
 
-**Skip asking if already named** — "sunum yap," "build me a deck," "PPTX ver" all resolve directly to Presentation, exactly like an already-named dashboard template skips the template menu. An open-ended request still asks.
+The format is asked about only when the user wants an artifact and hasn't said which kind ("give me something I can share with the team"). A request that names it — "sunum yap," "build me a deck," "PPTX ver" — resolves directly. A request for analysis, diagnosis or reconciliation gets its answer with no format question at all.
 
 ## Deck composition — tighter than the dashboard, not just smaller
 
@@ -31,6 +31,10 @@ A dashboard can hold a detail table of 10+ rows and several deep-dives because a
 
 **Key Insight** — at most one per deck, not one per finding. This is the single strongest, most defensible read of the whole analysis (highest confidence × highest materiality), given the deck's own spotlight treatment (inverse background, largest type on the page). Forcing a second "Key Insight" dilutes the one that earned it — a second-strongest finding is a normal finding slide, not a second spotlight.
 
+**A spotlight slide replaces a finding's regular slide; it is never added on top of it.** Each finding gets exactly one slide — either a content layout (A–D) or a spotlight (Key Risk / Key Opportunity / Key Insight) — so nothing is said twice and the spotlight doesn't inflate the slide count. Use a spotlight when the sentence and two or three numbers carry the finding better than a chart would; use a content layout when the chart is the evidence.
+
+**No slide exists to fill a slot.** A metric the data doesn't have gets no slide and no placeholder. The deck is as short as its supported findings: a dataset with one supported finding yields Cover, Executive Summary, that finding, Methodology.
+
 ## Layout catalog
 
 Six content layouts, plus four fixed-purpose skeletons defined further down (the spotlight slide, the Analytical State slide, Recommended Actions, and Methodology). A slide's content type determines its layout — never picked for visual variety.
@@ -38,7 +42,7 @@ Six content layouts, plus four fixed-purpose skeletons defined further down (the
 | Layout | Use when | Anatomy |
 |---|---|---|
 | **Cover** | Always, slide 1 | Dark ground (`#0E1116` / `#F6F6F4` text). Eyebrow (skill name, small caps) top-left. Title (very large, 800 weight) + period subtitle, vertically centered. Bottom row: "Prepared from" + source list (left), generation date (right). Typography only — no chart, no chrome |
-| **Executive Summary** | Always, slide 2 | Eyebrow. Left column: one-sentence headline stating the period's dominant finding, anchored above 3 numbered stat readouts (delta-colored) for the 3 KPIs that matter most. Right column: a bordered card, "Key Takeaways," 3–5 short complete sentences (the same cap the content rules set for the Executive Summary), not bullet fragments |
+| **Executive Summary** | Always, slide 2 | Eyebrow. Left column: one-sentence headline stating the period's dominant finding, anchored above **up to three** numbered stat readouts (delta colored by direction) — only KPIs the data actually supports; two, one or none is correct when that is what exists, and a readout is never filled with a metric that isn't in the data. Right column: a bordered card, "Key Takeaways," 3–5 short complete sentences (the same cap the content rules set for the Executive Summary), not bullet fragments |
 | **A — Big number + evidence** | One dominant KPI's trend is the finding | Headline sentence stating the trend in words. Huge number + delta + "vs previous period" inline beneath it. A single-axis trend chart below, same rules as the dashboard's trend chart (never dual-axis, one annotation only if a real cause is known — never invented). One caption sentence closing it out |
 | **B — Chart + takeaway card** | Any chart genuinely needs an adjacent interpretation — funnel, cohort heatmap, scatter, quadrant, or a chart the headline alone doesn't fully explain | Headline sentence. Two-column: chart left (60%), a bordered "Key Takeaway" card right (40%) with one interpretive sentence + 1–2 supporting stat rows. This is the general-purpose layout — most chart types not covered by A, C, or D land here rather than getting a bespoke layout invented for them |
 | **C — Ranked comparison** | A channel/category ranking is the finding | Headline sentence carrying the interpretation directly (not a neutral chart title — "Google Ads remained the largest revenue contributor" not "Revenue by channel"). Ranked bars below, sorted, each row showing entity name + bar + value + inline delta (colored). The finding is in the headline; the bars are the evidence for it |
@@ -48,9 +52,12 @@ Six content layouts, plus four fixed-purpose skeletons defined further down (the
 
 | Slide | Eyebrow color | Background | Extra element |
 |---|---|---|---|
-| Key Risk | Danger (`#A11D1D`) | Light | "Priority: Critical" or "Priority: High" pill, top-right — the same 🔴/🟠 label the finding carries in the candidate engine, not a separate deck-only scale |
+| Key Risk | Danger (`#A11D1D`) | Light | "Priority: Critical" or "Priority: High" pill, top-right — the finding's own priority label, as text |
 | Key Opportunity | Success (`#156143`) | Light | None — the opportunity framing itself carries the tone |
-| Key Insight | Info/lilac (`#8FA3FF`) | **Dark** (`#0E1116`) — the only content slide besides Cover/Methodology that inverts | "Confidence: [level]" in the footer instead of a source line |
+
+The eyebrow colors follow the direction rule, not a second scheme: a Key Risk is by definition an Unfavorable finding (danger), a Key Opportunity a Favorable one (success), a Key Insight takes the neutral info color. Priority still appears only as text.
+
+| Key Insight | Info/lilac (`#8FA3FF`) | **Dark** (`#0E1116`) — the only content slide besides Cover/Methodology that inverts | "Measurement confidence: [level]" plus the evidence tier if the insight is causal, in the footer instead of a source line |
 
 All three: eyebrow → huge headline (the finding, stated as a full sentence, not a chart title) → one supporting paragraph → 2–3 stat readouts in a row, each with its own small label. **No chart on a spotlight slide** — the number and the sentence carry it; a chart here would compete with the one thing the slide exists to say.
 
@@ -60,7 +67,7 @@ The layout catalog above governs where things sit. This section governs what get
 
 **One slide, one message.** Before writing a slide, answer: *what should the reader take away, in one sentence?* If the honest answer names more than one thing, it's two slides. A slide competing for attention across 3 charts, 5 KPIs, and 2 conclusions asks the reader to do the prioritization the analysis was supposed to do for them.
 
-**The headline states the finding, not the topic.** "Revenue Performance" is a section header; "Revenue growth accelerated in Q2, led by higher order volume" is a headline. Every content slide's `<h1>` should read as a claim, not a label — construct it as *finding → evidence*, e.g. "Paid acquisition grew, but efficiency declined" rather than "Acquisition Overview." **Never use a causal verb ("driven by," "caused by," "led by" in the strong sense, "because of") in a headline unless the underlying finding actually clears E4/E5 on the Evidence Ladder** (`comparability-rules.md` §2.6) — a headline is the most-read line on the slide, and it's exactly where an unearned causal claim does the most damage. At anything below E4/E5, use co-occurrence phrasing: "Revenue growth coincided with higher Google Ads spend," not "Google Ads drove revenue growth."
+**The headline states the finding, not the topic.** "Revenue Performance" is a section header; "Revenue growth accelerated in Q2, led by higher order volume" is a headline. Every content slide's `<h1>` should read as a claim, not a label — construct it as *finding → evidence*, e.g. "Paid acquisition grew, but efficiency declined" rather than "Acquisition Overview." **Never use a causal verb ("driven by," "caused by," "led by" in the strong sense, "because of") in a headline unless the underlying finding actually clears E4/E5 on the Evidence Ladder** (`comparability-rules.md` §2.6) — a headline is the most-read line on the slide, and it's exactly where an unearned causal claim does the most damage. A checked E3 design earns the conditional form in body text ("under parallel pre-trends, the campaign is estimated to have added …"), with its assumption stated — not in a headline. Below that, use co-occurrence phrasing: "Revenue growth coincided with higher Google Ads spend," not "Google Ads drove revenue growth."
 
 **Evidence, insight, and implication are three different things — don't collapse them into one label.** This is the same OBSERVATION/INTERPRETATION/INSIGHT distinction already required for dashboard captions (`dashboard-blueprints.md` §"Every chart carries a one-line caption"), applied to slide text: *"Revenue increased 18%"* is an observation; *"Growth was volume-led, not basket-value-led"* is an interpretation of two observations together; *"Sustaining growth may depend on maintaining acquisition volume"* is an implication, one step further and correspondingly more hedged. Never present the third as if it were the first.
 
@@ -109,7 +116,7 @@ The layout catalog above governs where things sit. This section governs what get
 1. Does this slide have exactly one message?
 2. Does the headline actually state that message — a conclusion, not just the topic?
 3. What specific number or chart supports it?
-4. Am I making a causal claim? If so, does the evidence actually clear E4/E5 — or does the phrasing need to soften to correlation/co-occurrence?
+4. Am I making a causal claim? If so, does the wording match its tier — unqualified only at E4/E5, conditional with its assumption at E3, co-occurrence below that?
 5. If I removed any single word or number, would the meaning change? (If not, cut it.)
 6. Could an executive understand this slide in 30 seconds?
 7. After reading it, would they still need to ask "so what?" — if yes, the implication is missing, not just under-stated.
@@ -120,11 +127,11 @@ If any answer is no, rewrite the slide — don't ship it and hope the speaker no
 
 ## Analytical State — the honest-gap slide, not a skip
 
-When a component the request or the template implies (e.g. retention, for a template that includes it) genuinely can't be evaluated from the supplied data, **build this slide instead of silently omitting the topic or, worse, forcing a chart from insufficient data.** Same skeleton as a spotlight slide, muted treatment (gray headline, not colored): states what can't be evaluated, the specific reason (a stated minimum vs. what was actually supplied — "60 days required, 42 supplied," not a vague "insufficient data"), and when to re-evaluate if that's knowable. This is the deck's version of the KPI card's "Insufficient history" state (`dashboard-blueprints.md` §KPI card rules — the "no prior period to compare" / "Not available in supplied data" states) — same discipline, different medium. Silently dropping the topic reads as if it was never considered; this slide proves it was.
+When a topic the user explicitly asked about (e.g. "include retention") genuinely can't be evaluated from the supplied data, **build this slide instead of silently omitting the topic or, worse, forcing a chart from insufficient data.** A component that is merely on a template's default list and can't be evaluated does not get its own slide — it is named in Methodology's Data limitations row, so the deck isn't padded with slides about what's missing. Same skeleton as a spotlight slide, muted treatment (gray headline, not colored): states what can't be evaluated, the specific reason (a stated minimum vs. what was actually supplied — "60 days required, 42 supplied," not a vague "insufficient data"), and when to re-evaluate if that's knowable. This is the deck's version of the KPI card's "Insufficient history" state (`dashboard-blueprints.md` §KPI card rules — the "no prior period to compare" / "Not available in supplied data" states) — same discipline, different medium. Silently dropping the topic reads as if it was never considered; this slide proves it was.
 
 ## Recommended Actions slide
 
-One slide, up to 3 actions (never more — a room reading a slide caps lower than a scrolled dashboard table). Same evidence bar as the dashboard's action cards (`dashboard-blueprints.md` Output mode 2 step 8): each action names its evidence inline, not just a headline claim, and carries a priority pill using the skill's own scale (Critical / High / Monitor — the 🔴/🟠/🟡 labels, `dashboard-blueprints.md` §KPI card rules), not a deck-only High/Medium. If a 4th action has real evidence behind it, it goes in the appendix/methodology material or gets cut — not compressed into the same slide at illegible size.
+One slide, up to 3 actions (never more — a room reading a slide caps lower than a scrolled dashboard table). Same evidence bar as the dashboard's action cards (`dashboard-blueprints.md` Output mode 2 step 8): each action names its evidence inline, not just a headline claim, and carries a priority pill using the skill's own scale (Critical / High / Medium — `SKILL.md` §Label vocabulary), shown as a neutral text pill; color on this slide, as everywhere, means direction only. If a 4th action has real evidence behind it, it goes in the appendix/methodology material or gets cut — not compressed into the same slide at illegible size.
 
 ## Methodology slide
 
@@ -138,7 +145,7 @@ A deck without this slide has hidden its own uncertainty in a format that discou
 
 ## Rendering mechanism
 
-**Generate the actual `.pptx` file using the `anthropic-skills:pptx` skill's own toolkit** — native slide shapes and text boxes (pptxgenjs or equivalent), not an HTML-to-PPTX conversion and not a set of exported images pretending to be a deck. Canvas: 16:9 widescreen (13.333in × 7.5in, 1920×1080 proportions).
+**First confirm a PPTX toolkit actually exists in this environment** — a presentation skill such as `anthropic-skills:pptx`, or a library such as pptxgenjs. If none does, don't claim a deck: deliver the slide-by-slide content as text and say no `.pptx` was produced (`SKILL.md` §Environment fallbacks). The API names below are pptxgenjs's; another toolkit's equivalents apply. **When a toolkit exists, generate the actual `.pptx` with it** — native slide shapes and text boxes (pptxgenjs or equivalent), not an HTML-to-PPTX conversion and not a set of exported images pretending to be a deck. Canvas: 16:9 widescreen (13.333in × 7.5in, 1920×1080 proportions).
 
 **Reuse the design system's exact tokens** — the design-token block in `dashboard-blueprints.md` §Rendering mechanism: same colors, same font, same spacing base. The spotlight-slide colors in the layout table above (Danger `#A11D1D`, Success `#156143`, Info/lilac `#8FA3FF`, dark ground `#0E1116`) are that token set's dark-ground variants, not a second palette. **Accessibility carries over unchanged too** (`dashboard-blueprints.md` §Accessibility): a delta is never color-alone — it carries its sign or arrow; a cohort-heatmap cell prints its value, not just a background color; any chart with ≥2 series gets a legend. Do not invent a separate visual language for the deck; a reader seeing both outputs from one request should recognize them as the same product.
 
@@ -159,8 +166,8 @@ A deck without this slide has hidden its own uncertainty in a format that discou
 
 **Never hand-draw rectangles to approximate a chart the toolkit can actually build natively.** This was a real defect in this skill's first executed presentation build — a ranked-comparison slide used styled rectangles instead of a native `bar` chart, which the toolkit supported directly. Visually similar, but not an editable chart and not what "the deck has real charts in it" means to someone who opens the file in PowerPoint.
 
-**Speaker notes carry the analytical trail, not restated content.** Per the design system's reference deck (the user's own, not shipped in this repo): each slide's speaker notes state which layout it uses and why that finding earned a slide (which candidate-engine criteria it cleared), not a spoken-word script of the slide's own text — the slide already says that.
+**Speaker notes carry the analytical trail, not restated content.** Per the design system's reference deck (the user's own, not shipped in this repo): each slide's speaker notes state which layout it uses and why that finding earned a slide (which candidate-engine criteria it cleared), not a spoken-word script of the slide's own text — the slide already says that. **Notes and embedded chart workbooks are part of the file the user will share:** they hold only the aggregated values the slide shows — no raw rows, no identifiers, no pasted source data (`data-quality-gate.md` §Handling PII).
 
-**Verify before delivering** — same discipline as the dashboard's render-verification rule (`dashboard-blueprints.md` §Rendering mechanism): convert the generated `.pptx` to PDF and render each slide to an image for visual inspection (per the `anthropic-skills:pptx` QA workflow) before calling it done — a shape-generation error or text overflow is as silent a failure in pptxgenjs as a missing charting-library reference is in HTML, and does not show up in a structural validator alone.
+**Verify before delivering** — same discipline as the dashboard's render-verification rule (`dashboard-blueprints.md` §Rendering mechanism): convert the generated `.pptx` to PDF and render each slide to an image for visual inspection (following the toolkit's own QA workflow where it has one). If no PDF or image renderer is available, run the structural checks that are and say the deck was not visually verified before calling it done — a shape-generation error or text overflow is as silent a failure in pptxgenjs as a missing charting-library reference is in HTML, and does not show up in a structural validator alone.
 
 **The PDF conversion is a verification step, not a second deliverable.** The `.pptx` is the output this skill hands to the user by default — don't also hand over the intermediate PDF unless it's specifically asked for; producing one every time as a matter of course adds a file the user didn't request and implies a second supported output format that isn't one.

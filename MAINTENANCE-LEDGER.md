@@ -5,12 +5,12 @@ Not part of the skill's runtime — a bakım/audit tracking dosyası. Amaç toke
 **Operasyonel kural (2026-08-14'ten itibaren):** `dashboard-builder-consolidated.md` artık her modül düzenlemesinden sonra otomatik yeniden üretilmiyor. Sadece Ali paylaşım/snapshot için istediğinde build edilir. Günlük geliştirme akışı: modül düzenle → test/audit et → tekrarla → **sadece release anında** "consolidated üret."
 
 ```yaml
-current_pass: 25
+current_pass: 26
 
 modules:
   SKILL.md:
-    last_changed_pass: 22
-    last_audited_pass: 22
+    last_changed_pass: 26
+    last_audited_pass: 26
     status: PASS. Pass 22: tightened step 6's template/format question —
       explicitly states these are two INDEPENDENT questions, and that a
       partial answer gets a re-ask for only the unanswered one, never
@@ -18,8 +18,8 @@ modules:
       live tester's session bundled both into one question, got a partial
       answer, needed a second round-trip to get the format too.
   data-quality-gate.md:
-    last_changed_pass: 25
-    last_audited_pass: 25
+    last_changed_pass: 26
+    last_audited_pass: 26
     status: PASS. Pass 21: added Cohort grain sufficiency check to
       §5 Distributional — a cohort partitioned finer than its N supports
       (daily cohorts on low daily volume) reads as a flat/non-improving
@@ -28,8 +28,8 @@ modules:
       review, cross-checked against our own framework before adding
       (not applied blindly).
   comparability-rules.md:
-    last_changed_pass: 25
-    last_audited_pass: 25
+    last_changed_pass: 26
+    last_audited_pass: 26
     status: PASS. Pass 23: added one clarifying paragraph after the
       "unknown is a mismatch" reporting requirement — an unknown checklist
       item rules out DIRECT specifically, it does not by itself force
@@ -41,12 +41,12 @@ modules:
       by default, not NOT_COMPARABLE) — this was a communication gap, not
       an architecture gap, so no new taxonomy was added.
   kpi-framework.md:
-    last_changed_pass: 25
-    last_audited_pass: 25
+    last_changed_pass: 26
+    last_audited_pass: 26
     status: PASS
   analysis-playbook.md:
-    last_changed_pass: 25
-    last_audited_pass: 25
+    last_changed_pass: 26
+    last_audited_pass: 26
     status: PASS. Pass 23: two fixes from an external adversarial review,
       both verified against source before applying. (a) REAL BUG: Insight
       Candidate Engine question 6 was logically inverted — the table's own
@@ -66,8 +66,8 @@ modules:
       run. Addresses part of the standing insight-ranking-consistency open
       finding (still not fully closed — see open_findings below).
   dashboard-blueprints.md:
-    last_changed_pass: 25
-    last_audited_pass: 25
+    last_changed_pass: 26
+    last_audited_pass: 26
     status: PASS. Pass 21: added a Responsive layout paragraph to
       §Rendering mechanism — SVG viewBox/scaling requirement + a stated
       ~768px reflow breakpoint (KPI strip to 2 cols, chart row to 1 col,
@@ -92,10 +92,10 @@ modules:
       is not. The two files now say the same thing instead of the QA gate
       being stricter than the rule it's supposed to enforce.
   presentation-blueprints.md:
-    last_changed_pass: 25
-    last_audited_pass: 25
+    last_changed_pass: 26
+    last_audited_pass: 26
     status: PASS. Pass 19 carried 1 open correction (real 8-slide deck
-      built for Numerspace.com via anthropic-skills:pptx/pptxgenjs;
+      built for a live GA4 property via anthropic-skills:pptx/pptxgenjs;
       structural validation passed, content QA clean, visual QA caught
       2 layout defects both fixed; a 3rd — ranked-comparison slide used
       hand-drawn rectangles instead of a native `bar` chart — fixed at
@@ -133,7 +133,7 @@ open_findings:
       dataset, EC-24 malformed CSV).
 
 pass_18_notes: >
-  Real-world catch, not a supplied audit: a live Numerspace.com dashboard
+  Real-world catch, not a supplied audit: a live a live GA4 property dashboard
   build silently dropped available data (an organic-query table) and ranked
   channels by volume alone despite the skill's own "never declare a channel
   best on one metric" rule already existing in prose. Root cause: no
@@ -251,6 +251,58 @@ pass_25_notes: >
   templates 11, rules 15, principles 11, layouts 6, facts 8, refs 6) —
   all match.
 
+pass_26_notes: >
+  Consistency-and-applicability pass against a 13-point brief. Each item
+  was classified before editing; nothing was removed to save length.
+  BEHAVIOR CHANGES (deliberate, stated here so they are not silent):
+  (1) Routing — SKILL.md step 6 now branches on what was asked. Analysis,
+  diagnosis and reconciliation requests get their answer directly, with no
+  template or format question. A dashboard request is built in the same
+  response when the template is named or only one is Supported; a question
+  is asked only when two Supported templates answer different questions.
+  The old "first output, then wait for a selection" gate is gone.
+  (2) Statistics — the two-proportion test is no longer the default for
+  every rate change. Statistical sufficiency now starts from data
+  structure (independent groups / pre-post series / repeated measures /
+  cluster assignment / continuous / multiple comparisons), reports absolute
+  pp difference + relative change + interval + n together, and question 2
+  has four outcomes: SUPPORTED, NEGLIGIBLE (the only one that suppresses),
+  INCONCLUSIVE (reported, capped MEDIUM, never "no effect"), UNTESTED.
+  (3) Analytical State slide only for a topic the user asked about; a
+  template-default component that can't be evaluated goes in Methodology.
+  (4) A spotlight slide replaces a finding's regular slide.
+  REWRITE: evidence tier vs measurement confidence split into two labels
+  (E4/E5 no longer required for a confident descriptive finding); E3 given
+  one definition — a conditional causal statement with its assumption and
+  check stated; label taxonomy unified in SKILL.md §Label vocabulary
+  (data-quality severity / finding priority / performance direction / claim
+  type), traffic-light emoji removed everywhere, success/danger colors
+  reserved for direction; "Monitor/Positive" and the deck-only scale gone;
+  funnel gradient replaced by a flat tint; design-spec "Interaction:
+  filter/drill-down" replaced by "Scope", with a live control allowed only
+  when real and verified; template states Supported / Limited / Not
+  supported, Template A's history rationale tied to its actual components,
+  Day-N cohort maturity spelled out; Executive Summary up to three KPIs;
+  KPI action triggers reframed as checks to run with the confirming data
+  named (12 rows); percent/fraction normalization before range checks;
+  render verification bound to artifact branches, with fallbacks for no
+  compute / no HTML rendering / no PPTX toolkit; PII rule extended to
+  embedded data, chart workbooks, speaker notes and intermediate files.
+  KEEP: all vendor differences, hard blocks, formulas, benchmarks, edge
+  cases and thresholds — none deleted. MOVE TO REFERENCE: nothing moved out
+  of SKILL.md; it gained two short canonical sections (Label vocabulary,
+  Environment fallbacks) and other files now point to them instead of
+  restating. The file was not split further: the reference files are
+  already loaded on demand, and the cross-source rules lose their meaning
+  if divided by source. VERIFY: every source URL in research/raw was
+  checked for reachability (results in research/FRESHNESS-LEDGER.md);
+  content was not re-read, so vendor facts remain "as last verified
+  August 2026". Five scenario walk-throughs (analysis only / build a
+  dashboard / reconciliation / no compute tool / no artifact tooling) were
+  run by independent readers following the files literally; all five
+  reached the intended branch with no blocking question, and the eleven
+  small gaps they reported were closed in the same pass.
+
 decisions_deferred_not_findings:
   - id: auto-mode
     note: >
@@ -260,9 +312,9 @@ decisions_deferred_not_findings:
       rediscovered as if new.
 
 last_consolidated_build:
-  pass: 25
+  pass: 26
   date: 2026-10-10
-  word_count: 36470
+  word_count: 39631
   note: >
     Built by scripts/build_consolidated.sh — verbatim concatenation of
     SKILL.md + the 6 reference files, Part headers added. No hand-condensed
