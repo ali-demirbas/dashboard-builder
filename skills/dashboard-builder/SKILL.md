@@ -48,9 +48,15 @@ Files received
        §Template catalog + §Template matching)
        + ask which OUTPUT FORMAT is wanted: Dashboard / Presentation / Both
                                                  (references/presentation-blueprints.md
-       §Output format selection). Skip asking whichever of template or format
-       the user already named — same "don't re-ask what they told you" rule
-       for both. Do NOT build either output yet.
+       §Output format selection).
+       These are two INDEPENDENT questions, not one combined prompt — the
+       user may answer either one first, both at once, or neither. Skip
+       asking whichever of template or format the user already named. If
+       only one of the two gets answered, ask again for just the other one
+       — never re-ask what's already been answered, and never bundle the
+       re-ask back into a single "which template and format" question if
+       that's what caused the partial answer in the first place. Do NOT
+       build either output yet.
   → 7. On selection → full blueprint: dashboard  (references/dashboard-blueprints.md)
                     → full blueprint: presentation (references/presentation-blueprints.md)
                     → both, built independently, same underlying analysis

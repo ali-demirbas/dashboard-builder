@@ -8,7 +8,7 @@ After any behavioral change:
 
 1. Update `MAINTENANCE-LEDGER.md` — bump `current_pass`, set the touched module's `last_changed_pass`/`last_audited_pass`, note what changed and why.
 2. Run `bash scripts/validate.sh`.
-3. Regenerate `dashboard-builder-consolidated.md` only if this is a release — day-to-day edits don't need it (`MAINTENANCE-LEDGER.md`'s own operational note explains why).
+3. Regenerate `dashboard-builder-consolidated.md` (`bash scripts/build_consolidated.sh`) only if this is a release — day-to-day edits don't need it (`MAINTENANCE-LEDGER.md`'s own operational note explains why).
 
 ## Adding a metric definition or benchmark
 
