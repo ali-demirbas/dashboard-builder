@@ -73,8 +73,8 @@ npx skills add ali-demirbas/dashboard-builder --all
 
 | You say | What happens |
 |---|---|
-| "Analyze this data" (+ files) | Ingestion summary, data-quality findings, 5–10 prioritized observations — never jumps straight to a dashboard |
-| "Build a dashboard" | Offers only the templates your actual data supports (of 11), then renders a self-contained HTML dashboard |
+| "Analyze this data" (+ files) | Ingestion summary, data-quality findings, 5–10 prioritized findings — delivered directly, no template or format question |
+| "Build a dashboard" | Picks the template your data and question support (of 11) and renders a self-contained HTML dashboard; asks only if two templates would answer different questions |
 | "Make me a deck / presentation" | Same underlying analysis, rendered as a PPTX deck — gated tighter than the dashboard (only CRITICAL/HIGH findings by default) |
 | "Why is my CAC up" / "which channel is working" | Diagnosis-first: hypothesis elimination, checks tracking/config changes before a demand-side story, names the experiment that would actually settle causation |
 | "These numbers don't match" | Cross-source reconciliation — the seven-point checklist, what each source is actually valid for, no picking a winner |
@@ -167,7 +167,7 @@ Benchmarks always carry their sample and the caveat the publisher attached. Seve
 
 ## Status
 
-Skill content is complete and internally consistent across 25 development passes. Execution-tested against 4 synthetic scenarios (real subagents, cross-verified arithmetic) and one real 7-file GA4 export from a live property — all passed. 4 of 50 `TEST-SUITE-regression-benchmark.md` golden-test cases automated; the remainder is a manual checklist pending automation. Repo scaffolding (CI, validators, tests) is live and green.
+Skill content is complete and internally consistent across 26 development passes. Execution-tested against 4 synthetic scenarios (real subagents, cross-verified arithmetic) and one real 7-file GA4 export from a live property — all passed. 4 of 50 `TEST-SUITE-regression-benchmark.md` golden-test cases automated; the remainder is a manual checklist pending automation. Repo scaffolding (CI, validators, tests) is live and green.
 
 ## Prior art
 
