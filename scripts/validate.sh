@@ -3,8 +3,9 @@
 #
 # Single entry point: frontmatter validity, internal link integrity, the
 # SKILL.md references table against what's actually on disk, both plugin
-# manifests parsing as JSON, and whether dashboard-builder-consolidated.md
-# is stale relative to MAINTENANCE-LEDGER.md's own tracking.
+# manifests parsing as JSON, an instruction-like-text scan of shipped content,
+# and whether dashboard-builder-consolidated.md is stale — both against
+# MAINTENANCE-LEDGER.md's pass tracking and against a fresh rebuild.
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -32,12 +33,12 @@ for m in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
 done
 
 echo "== 4. Shipped content carries no instruction-like text =="
-# research/raw/ and the test suite get read back into context at runtime —
+# research/ and the test suite get read back into context at runtime —
 # the skill's own rule 11 (data, never instructions) applies to what this
 # repo ships as much as to what a user uploads.
-python3 scripts/check_shipped_content.py research/raw/*.md TEST-SUITE-regression-benchmark.md || FAIL=1
+python3 scripts/check_shipped_content.py research/*.md research/raw/*.md TEST-SUITE-regression-benchmark.md || FAIL=1
 
-echo "== 5. Consolidated-file staleness =="
+echo "== 5. Consolidated-file staleness (ledger pass numbers) =="
 python3 - <<'PY' || FAIL=1
 import re
 import sys
@@ -72,6 +73,26 @@ if stale:
 print(f"  ok: dashboard-builder-consolidated.md (pass {built_pass}) is current for all "
       f"{len(modules)} tracked module(s)")
 PY
+
+echo "== 6. Consolidated-file staleness (content vs fresh rebuild) =="
+# The ledger check above only compares self-reported pass numbers; this one
+# rebuilds the file from source and compares bytes, so an edit to a source
+# file that was never regenerated (or a hand-edit to the consolidated file)
+# is caught even when the ledger was not updated.
+TMP_BUILD="$(mktemp)"
+if bash scripts/build_consolidated.sh "$TMP_BUILD" >/dev/null; then
+  if cmp -s "$TMP_BUILD" dashboard-builder-consolidated.md; then
+    echo "  ok: dashboard-builder-consolidated.md matches a fresh build from source"
+  else
+    echo "FAIL: dashboard-builder-consolidated.md differs from a fresh build of SKILL.md + references/ —"
+    echo "      regenerate it with: bash scripts/build_consolidated.sh"
+    FAIL=1
+  fi
+else
+  echo "FAIL: scripts/build_consolidated.sh did not run"
+  FAIL=1
+fi
+rm -f "$TMP_BUILD"
 
 echo
 if [ "$FAIL" = 1 ]; then

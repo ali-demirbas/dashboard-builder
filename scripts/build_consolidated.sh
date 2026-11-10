@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 # Builds dashboard-builder-consolidated.md by verbatim concatenation of the
-# skill's 7 source files. Run from anywhere; writes to the repo root.
+# skill's 7 source files. Run from anywhere.
+#
+# Usage: build_consolidated.sh [OUTPUT_PATH]
+#   Default output is dashboard-builder-consolidated.md at the repo root.
+#   validate.sh passes a temp path to compare a fresh build with the
+#   committed file without overwriting it.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="${1:-$ROOT/dashboard-builder-consolidated.md}"
+# Resolve a relative OUTPUT_PATH against the caller's directory, before cd.
+case "$OUT" in /*) ;; *) OUT="$PWD/$OUT" ;; esac
 cd "$ROOT" || exit 1
 S="skills/dashboard-builder"
-OUT="dashboard-builder-consolidated.md"
 {
   echo "# Marketing & Growth Dashboard Builder — Consolidated Skill (7 files → 1)"
   echo

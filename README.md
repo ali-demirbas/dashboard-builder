@@ -29,16 +29,19 @@ The skill's primary job is catching that before it produces a wrong dashboard. T
 
 ```mermaid
 flowchart LR
-    A[Data] --> B[Quality gate]
+    A[Data] --> I[Inventory and schema detection]
+    I --> B[Quality gate]
     B --> C[Session metric registry]
     C --> D[Comparability engine]
     D --> E[Analysis]
     E --> F[Insight candidate engine]
-    F --> G[Dashboard]
-    F --> H[Presentation]
+    F -->|default| J[Analysis answer]
+    F -->|numbers disagree| K[Reconciliation]
+    F -->|dashboard asked| G[Dashboard]
+    F -->|deck asked| H[Presentation]
 ```
 
-Every stage runs once, on the same data — the dashboard and the presentation are two renderings of one analysis, never two separate passes that can quietly disagree with each other.
+Every stage runs once, on the same data. What comes out depends on what was asked: an analysis answer by default, a reconciliation when two sources disagree, and a dashboard or presentation only when one is requested — all renderings of one analysis, never separate passes that can quietly disagree with each other.
 
 - **Quality gate** — BLOCKER/WARNING/INFO severity, join-safety checks, anomaly triage before any conclusion.
 - **Session metric registry** — every metric tagged EXACT/INFERRED/AMBIGUOUS so "Revenue" means one thing end to end, not a different column in three different sections.
@@ -67,7 +70,7 @@ claude --plugin-dir ./dashboard-builder
 npx skills add ali-demirbas/dashboard-builder --all
 ```
 
-`skills` is a small, open-source npm package (not code from this repo) that fetches the `skills/` markdown files from a public GitHub repo into your local Claude Code skills folder — it doesn't execute anything from `dashboard-builder` itself. If an assistant declines to run this on your behalf citing an unverified source, that's a generic npx-caution heuristic misfiring on a known, legitimate installer — use the `/plugin marketplace add` method above instead, or run `npx skills add` yourself directly in a terminal.
+`skills` is a small, open-source npm package (not code from this repo) that fetches the `skills/` markdown files from a public GitHub repo into your local Claude Code skills folder — it doesn't execute anything from `dashboard-builder` itself.
 
 ## Usage
 
@@ -78,13 +81,12 @@ npx skills add ali-demirbas/dashboard-builder --all
 | "Make me a deck / presentation" | Same underlying analysis, rendered as a PPTX deck — gated tighter than the dashboard (only CRITICAL/HIGH findings by default) |
 | "Why is my CAC up" / "which channel is working" | Diagnosis-first: hypothesis elimination, checks tracking/config changes before a demand-side story, names the experiment that would actually settle causation |
 | "These numbers don't match" | Cross-source reconciliation — the seven-point checklist, what each source is actually valid for, no picking a winner |
-| "Is this dashboard/report right?" (+ an existing plan or output) | Runs the same data-quality and comparability checks against what you already have |
 
 ## What's inside
 
 ```
 skills/dashboard-builder/
-  SKILL.md                            workflow, operating principles, non-negotiable rules
+  SKILL.md                            workflow, label vocabulary, operating principles, non-negotiable rules
   references/
     data-quality-gate.md              BLOCKER/WARNING/INFO severity, check sequence, anomaly triage
     comparability-rules.md            when two numbers must not be compared, and what to say instead
@@ -95,26 +97,36 @@ skills/dashboard-builder/
 
 research/
   search-playbook.md                  how to search the web for KPI *relationships* (vs definitions)
-  raw/                                vendor-sourced metric definitions, every entry with a source URL
+  FRESHNESS-LEDGER.md                 when each platform's facts were last verified, source-link reachability
+  raw/                                sourced research notes, every entry with a source URL
     google-stack-metrics.md           GA4, Google Ads, Play Console, Firebase, Search Console
     mmp-attribution-metrics.md        Adjust, AppsFlyer, Branch, Singular, SKAdNetwork/AdAttributionKit
     crm-lifecycle-metrics.md          Braze, Klaviyo, Iterable, Insider, D·engage, MPP, deliverability
     paid-media-metrics.md             Meta, TikTok, LinkedIn, IAB/MRC standards, platform incrementality
     unit-economics-metrics.md         CAC, LTV/CLV, payback, retention, churn, NRR, MER, iROAS
+    causal-evidence-three-relationships.md  evidence for CPI vs quality, message frequency, spend saturation
+    semantic-layers-mmm-clv.md        semantic layers, MMM and CLV/BTYD libraries
     dbt-data-quality-tests.md         dbt-utils and dbt-expectations generic tests for marketing data
 
-scripts/                              repo validators (frontmatter, internal links, references-table/disk sync, shipped-content injection scan)
+scripts/                              repo validators (frontmatter, internal links, references-table/disk sync,
+                                      shipped-content injection scan) and the consolidated-file builder
 tests/                                unit tests for the validator scripts
-evals/                                pointer to TEST-SUITE-regression-benchmark.md's golden-test cases
+evals/                                placeholder; points to TEST-SUITE-regression-benchmark.md
+.claude-plugin/                       plugin.json and marketplace.json
+.github/                              CI workflow, issue and PR templates
 
+TEST-SUITE-regression-benchmark.md    golden-test cases (manual regression checklist)
 dashboard-builder-consolidated.md     generated release artifact — see CLAUDE.md, don't edit directly
 MAINTENANCE-LEDGER.md                 pass/module tracking for maintenance and audits
+CHANGELOG.md                          release notes
+CLAUDE.md · CONTRIBUTING.md           repo rules and editing workflow
+SECURITY.md · CODE_OF_CONDUCT.md · LICENSE
 ```
 
 <details>
 <summary><b>The 11 dashboard templates</b></summary>
 
-Two tiers — Tier 1 for a blended, multi-domain dataset; Tier 2 for one specific data shape. Only the templates your actual data supports are ever offered.
+Two tiers — Tier 1 for a blended, multi-domain dataset; Tier 2 for one specific data shape. The template you name, or the single one your data and question fit, is built directly — Limited when some components can't be supported, with those gaps named. A question is asked only when two fitting templates would answer different questions.
 
 | Template | Question it answers |
 |---|---|
@@ -153,7 +165,7 @@ Every hard block traces to a vendor's own documentation or a peer-reviewed paper
 ## Development
 
 ```bash
-bash scripts/validate.sh              # frontmatter, internal links, references table, plugin manifest, shipped-content scan, staleness
+bash scripts/validate.sh              # frontmatter, internal links, references table, plugin manifests, shipped-content scan, consolidated-file staleness (ledger + content diff)
 python3 -m unittest discover -s tests -v
 ```
 
@@ -167,7 +179,7 @@ Benchmarks always carry their sample and the caveat the publisher attached. Seve
 
 ## Status
 
-Skill content is complete and internally consistent across 26 development passes. Execution-tested against 4 synthetic scenarios (real subagents, cross-verified arithmetic) and one real 7-file GA4 export from a live property — all passed. 4 of 50 `TEST-SUITE-regression-benchmark.md` golden-test cases automated; the remainder is a manual checklist pending automation. Repo scaffolding (CI, validators, tests) is live and green.
+Skill content is internally consistent across 27 development passes. Execution-tested against synthetic scenarios (fresh sessions, cross-verified arithmetic) and one real 7-file GA4 export from a live property. 4 of the `TEST-SUITE-regression-benchmark.md` golden-test cases have been executed manually; none are automated, and the rest remain a manual checklist. Repo scaffolding (CI, validators, tests) is live and green.
 
 ## Prior art
 

@@ -14,7 +14,7 @@ assignees: ''
 
 - Which reference file(s) the behavior traces to (if known):
 - Data shape involved (GA4 export, ad-platform export, CRM export, blended, other):
-- Output format (Dashboard / Presentation / Both):
+- Output type (Analysis answer / Reconciliation / Dashboard / Presentation / Both):
 
 ## Relevant output
 

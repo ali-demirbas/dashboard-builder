@@ -1,16 +1,16 @@
 # Maintenance Ledger
 
-Not part of the skill's runtime — a bakım/audit tracking dosyası. Amaç token azaltmak değil, bir sonraki audit turunda "neresi değişti, neresi zaten denetlendi" sorusunu saniyeler içinde cevaplamak.
+Not part of the skill's runtime — a maintenance/audit tracking file. Its purpose is not to save tokens but to answer, in seconds, the next audit round's question: "what changed, and what has already been audited?"
 
-**Operasyonel kural (2026-08-14'ten itibaren):** `dashboard-builder-consolidated.md` artık her modül düzenlemesinden sonra otomatik yeniden üretilmiyor. Sadece Ali paylaşım/snapshot için istediğinde build edilir. Günlük geliştirme akışı: modül düzenle → test/audit et → tekrarla → **sadece release anında** "consolidated üret."
+**Operating rule (since 2026-08-14):** `dashboard-builder-consolidated.md` is no longer regenerated automatically after every module edit. It is built only when the maintainer requests it for sharing or a snapshot. Day-to-day flow: edit a module → test/audit → repeat → regenerate the consolidated file **only at release time**.
 
 ```yaml
-current_pass: 26
+current_pass: 28
 
 modules:
   SKILL.md:
-    last_changed_pass: 26
-    last_audited_pass: 26
+    last_changed_pass: 28
+    last_audited_pass: 28
     status: PASS. Pass 22: tightened step 6's template/format question —
       explicitly states these are two INDEPENDENT questions, and that a
       partial answer gets a re-ask for only the unanswered one, never
@@ -18,8 +18,8 @@ modules:
       live tester's session bundled both into one question, got a partial
       answer, needed a second round-trip to get the format too.
   data-quality-gate.md:
-    last_changed_pass: 26
-    last_audited_pass: 26
+    last_changed_pass: 28
+    last_audited_pass: 28
     status: PASS. Pass 21: added Cohort grain sufficiency check to
       §5 Distributional — a cohort partitioned finer than its N supports
       (daily cohorts on low daily volume) reads as a flat/non-improving
@@ -28,8 +28,8 @@ modules:
       review, cross-checked against our own framework before adding
       (not applied blindly).
   comparability-rules.md:
-    last_changed_pass: 26
-    last_audited_pass: 26
+    last_changed_pass: 28
+    last_audited_pass: 28
     status: PASS. Pass 23: added one clarifying paragraph after the
       "unknown is a mismatch" reporting requirement — an unknown checklist
       item rules out DIRECT specifically, it does not by itself force
@@ -41,12 +41,12 @@ modules:
       by default, not NOT_COMPARABLE) — this was a communication gap, not
       an architecture gap, so no new taxonomy was added.
   kpi-framework.md:
-    last_changed_pass: 26
-    last_audited_pass: 26
+    last_changed_pass: 28
+    last_audited_pass: 28
     status: PASS
   analysis-playbook.md:
-    last_changed_pass: 26
-    last_audited_pass: 26
+    last_changed_pass: 28
+    last_audited_pass: 28
     status: PASS. Pass 23: two fixes from an external adversarial review,
       both verified against source before applying. (a) REAL BUG: Insight
       Candidate Engine question 6 was logically inverted — the table's own
@@ -66,8 +66,8 @@ modules:
       run. Addresses part of the standing insight-ranking-consistency open
       finding (still not fully closed — see open_findings below).
   dashboard-blueprints.md:
-    last_changed_pass: 26
-    last_audited_pass: 26
+    last_changed_pass: 28
+    last_audited_pass: 28
     status: PASS. Pass 21: added a Responsive layout paragraph to
       §Rendering mechanism — SVG viewBox/scaling requirement + a stated
       ~768px reflow breakpoint (KPI strip to 2 cols, chart row to 1 col,
@@ -92,15 +92,15 @@ modules:
       is not. The two files now say the same thing instead of the QA gate
       being stricter than the rule it's supposed to enforce.
   presentation-blueprints.md:
-    last_changed_pass: 26
-    last_audited_pass: 26
+    last_changed_pass: 28
+    last_audited_pass: 28
     status: PASS. Pass 19 carried 1 open correction (real 8-slide deck
       built for a live GA4 property via a PPTX toolkit;
       structural validation passed, content QA clean, visual QA caught
       2 layout defects both fixed; a 3rd — ranked-comparison slide used
       hand-drawn rectangles instead of a native `bar` chart — fixed at
       spec level only, delivered file not rebuilt, still offer-if-asked.
-      LibreOffice installed on host to enable PDF-based visual QA).
+      a PDF converter installed to enable PDF-based visual QA).
       Pass 20: reviewed external critique (unattributed per policy) of
       Deck composition — 2 real findings, 1 pushed back on. Applied:
       (a) explicit user-override mechanism — MEDIUM findings, specific
@@ -126,14 +126,14 @@ open_findings:
   - id: test-suite-coverage
     area: TEST-SUITE-regression-benchmark.md
     note: >
-      4 of 50 cases actually executed against real subagents (T-X03, T-M07,
-      T-M08, T-D04 — all passed, cross-verified by hand). Remaining 46 are
-      still a manual checklist only, never run. Priority if resumed: the
+      4 of 50 cases executed manually (T-X03, T-M07, T-M08, T-D04 — all
+      passed, cross-verified by hand); none are automated. The remaining
+      cases are still a manual checklist only, never run. Priority if resumed: the
       other P0/P1-adjacent cases first (EC-08 duplicate rows, EC-19 large
       dataset, EC-24 malformed CSV).
 
 pass_18_notes: >
-  Real-world catch, not a supplied audit: a live a live GA4 property dashboard
+  Real-world catch, not a supplied audit: a live GA4 property dashboard
   build silently dropped available data (an organic-query table) and ranked
   channels by volume alone despite the skill's own "never declare a channel
   best on one metric" rule already existing in prose. Root cause: no
@@ -211,7 +211,7 @@ pass_24_notes: >
   (skips D — matches the user's own reference deck, left alone). PROCESS
   CHANGE: dashboard-builder-consolidated.md is now built by verbatim
   concatenation of the 7 source files (scripts/build_consolidated.sh),
-  not hand-condensed — P23 found two of my own edits had never been
+  not hand-condensed — P23 found two earlier edits had never been
   mirrored, and hand-mirroring ~35 edits here would have been worse.
 
 pass_25_notes: >
@@ -303,6 +303,57 @@ pass_26_notes: >
   reached the intended branch with no blocking question, and the eleven
   small gaps they reported were closed in the same pass.
 
+pass_27_notes: >
+  First behavioral audit: six live runs, each a fresh session invoking the
+  skill on a synthetic dataset with planted traps
+  (revenue across GA4/Meta/Shopify with tagged mixed currency and customer
+  emails; daily spend with a Total row joined to weekly conversions; a
+  small-sample pre/post with a key-event rename mid-month; mixed percent
+  formats with zero denominators; Adjust vs GA4 with no windows stated; a
+  CRM export with a prompt-injection campaign name and email/phone columns,
+  built into an HTML dashboard). All six caught every planted trap.
+  ROOT-CAUSE FINDING: the locally installed copy of the skill was stale
+  (predated Passes 24-26); the runs measured the old version. The install
+  was re-synced. Defects that recurred across the old-
+  version runs (traffic-light emoji as priority, data-quality issues listed
+  as prioritized findings, an analysis answer ending in a template/format
+  menu) were tightened in SKILL.md (emoji named explicitly; data-quality
+  issues go in their own section with severity; branch A's closing offer is
+  one sentence, no menu). Two runs repeated on the current version: both
+  clean on all three.
+
+pass_28_notes: >
+  Second, deeper audit: seven live runs on synthetic traps (CRM export with
+  identifiers and an instruction-like campaign name built into a dashboard;
+  board deck from an MRR file with a duplicated month; daily cohorts whose
+  immature cells are stored as 0; locale-formatted channel file with a
+  "just assume a margin" request; cross-platform ranking with mismatched
+  attribution windows; executive dashboard from two days of data; a workbook
+  whose summary sheet is a stale forecast) plus four independent line-by-line
+  reads. All seven runs handled their trap. The text reads found about 140
+  defects, each verified against the file before fixing. Main changes:
+  Statistical sufficiency gains a NOT APPLICABLE outcome for population
+  totals, SUPPORTED now requires a material effect, single-series
+  before/after reads cap at UNTESTED unless the trend gate clears, and the
+  INCONCLUSIVE volume-limit case is named; the data-quality gate runs the
+  totals-row check first and adds right-censored cohort cells, locale number
+  and date formats, summary-vs-detail sheets, hidden sheets and impossible
+  metric-for-row-type checks; blocking questions are batched in one message;
+  template states define core components, a named template that is Not
+  supported builds the closest one instead of offering a menu; data-derived
+  strings are escaped before embedding; artifacts are named by business
+  domain, never by the source vendor; the Evidence Ladder is applied
+  consistently (E3 conditional wording in iROAS, uplift and geo-lift rows);
+  vendor facts re-checked against official docs (Postmaster reputation
+  dashboards retired, no Chrome cookie break date, TikTok click/view
+  windows, Klaviyo open-rate denominator, Apple Ads rename, SKAN /
+  AdAttributionKit). The design-token block was replaced with one complete
+  system (Inter, a single blue brand color, warm-stone ink, direction pairs
+  for light and dark ground, series and sequential scales); the deck uses
+  the same tokens. Public surface: stale audit documents removed, README and
+  test suite brought up to the current behavior, content-diff staleness
+  check added to validation, version 0.3.0 with a changelog.
+
 decisions_deferred_not_findings:
   - id: auto-mode
     note: >
@@ -312,13 +363,13 @@ decisions_deferred_not_findings:
       rediscovered as if new.
 
 last_consolidated_build:
-  pass: 26
-  date: 2026-10-10
-  word_count: 39631
+  pass: 28
+  date: 2026-11-10
+  word_count: 43494
   note: >
     Built by scripts/build_consolidated.sh — verbatim concatenation of
     SKILL.md + the 6 reference files, Part headers added. No hand-condensed
     sections anymore, so nothing to mirror by hand. Changelog still omitted.
 ```
 
-**Nasıl okunur:** `last_changed_pass > last_audited_pass` olan bir modül, son değişiklikten sonra tam denetlenmemiş demektir — sıradaki audit'in önceliği odur. `last_consolidated_build.pass`'ten büyük `last_changed_pass`'i olan herhangi bir modül varsa, consolidated dosya güncel değildir — release öncesi yeniden üretilmeli.
+**How to read it:** a module with `last_changed_pass > last_audited_pass` has not been fully audited since its last change — it is the next audit's priority. If any module's `last_changed_pass` exceeds `last_consolidated_build.pass`, the consolidated file is out of date and must be regenerated before release. `scripts/validate.sh` also rebuilds the consolidated content and fails if it differs from the committed file.

@@ -16,12 +16,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Run unit tests (frontmatter checker, link checker)
+      - name: Run unit tests (frontmatter, link and shipped-content checkers)
         run: python3 -m unittest discover -s tests -v
       - name: Run repo validation
         # Single entry point: frontmatter, internal links, the SKILL.md
-        # references table vs. disk, plugin manifest JSON, consolidated-file
-        # staleness.
+        # references table vs. disk, both plugin manifests' JSON, shipped-
+        # content scan, consolidated-file staleness (ledger pass numbers and
+        # a content diff against a fresh rebuild).
         run: bash scripts/validate.sh
 
   # A separate job, not another step: a shell defect in the validator must

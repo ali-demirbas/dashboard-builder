@@ -1,6 +1,6 @@
 # Semantic Layers, MMM & CLV Libraries — raw research
 
-> Continues the earlier GitHub recon (`github-skills-recon.md` covers Claude-skill collections; `dbt-data-quality-tests.md` covers dbt-utils/dbt-expectations). This file covers semantic layers, product-analytics math, MMM libraries, and CLV/BTYD libraries. All stars/license/archived status pulled live via `gh api`; file contents pulled via raw.githubusercontent.com, not guessed.
+> Companion to `dbt-data-quality-tests.md` (dbt-utils/dbt-expectations). This file covers semantic layers, product-analytics math, MMM libraries, and CLV/BTYD libraries. All stars/license/archived status pulled live via `gh api`; file contents pulled via raw.githubusercontent.com, not guessed.
 
 ---
 

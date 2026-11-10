@@ -12,7 +12,7 @@ After any behavioral change:
 
 ## Adding a metric definition or benchmark
 
-Goes in `kpi-framework.md` (formulas/benchmarks) or `research/raw/*.md` (vendor-sourced definitions with URLs). Every entry needs a source — a fetched vendor doc, a cited paper, or an explicit "unverified" label (`CLAUDE.md` rule 3). Where sources disagree, record both as a conflict rather than picking one silently — this repo has existing examples of that pattern in `comparability-rules.md`.
+Goes in `kpi-framework.md` (formulas/benchmarks) or `research/raw/*.md` (sourced research notes with URLs). Every entry needs a source — a fetched vendor doc, a cited paper, or an explicit "unverified" label (`CLAUDE.md` rule 3). Where sources disagree, record both as a conflict rather than picking one silently — this repo has existing examples of that pattern in `comparability-rules.md`.
 
 ## Adding a comparability rule or hard block
 

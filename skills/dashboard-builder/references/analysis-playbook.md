@@ -17,16 +17,16 @@ Identify: date fields, channel/campaign fields, source/medium, country, platform
 **Source identification: precedence and ambiguity — resolve before trusting either signal alone.**
 - **Filename vs. schema conflict.** A filename is a label someone typed; the column schema is the actual export. When they disagree (e.g. `ga4_export.csv` but the columns are Campaign/Spend/Impressions/Clicks/CTR — an ad-platform shape, not a GA4 one), **schema evidence wins.** State the conflict explicitly ("filename suggests GA4, but the columns match an ad-platform export — treating as [platform] based on schema") rather than silently trusting either signal without saying so.
 - **Ambiguous source.** A generic file (e.g. Date/Users/Revenue/Orders with no other identifying columns, naming convention, or metadata) may not match any known platform pattern at all. Do not guess a platform from weak cues — a wrong platform guess silently imports that platform's counting-unit and attribution-window assumptions into every downstream comparability check. State **"Source: unidentified — treating as a generic/user-provided KPI sheet"** and proceed with whatever of the eight facts (`SKILL.md` step 1) can still be inferred or must be asked for.
-- **Record a confidence level with every source identification, not just a name.** "Source: GA4" and "Source: probably GA4" lead to very different downstream behavior, and collapsing them loses the distinction exactly where it matters. Tag each source and name the evidence:
+- **Record a source-identification confidence with every source identification, not just a name.** "Source: GA4" and "Source: probably GA4" lead to very different downstream behavior, and collapsing them loses the distinction exactly where it matters. Tag each source and name the evidence (the values are deliberately not the CRITICAL/HIGH/MEDIUM/LOW priority words; `SKILL.md` §Label vocabulary):
 
   | Level | Basis | Downstream effect |
   |---|---|---|
-  | **HIGH** | Multiple platform-distinctive columns or a recognizable export structure (e.g. `sessionDefaultChannelGroup` + `eventName` + a property-style layout) | Apply that platform's counting rules, attribution defaults, and named hard blocks in full |
-  | **MEDIUM** | Column names are consistent with the platform but not distinctive to it | Apply platform rules, but **state that the identification is inferred** — a rule applied to a misidentified source is worse than no rule |
-  | **LOW** | Only a filename, a single suggestive column, or the user's say-so with no schema corroboration | Do **not** apply platform-specific semantic rules. Treat as a generic sheet and ask |
-  | **UNKNOWN** | No signal | As "Ambiguous source" above |
+  | **Strong** | Multiple platform-distinctive columns or a recognizable export structure (e.g. `sessionDefaultChannelGroup` + `eventName` + a property-style layout) | Apply that platform's counting rules, attribution defaults, and named hard blocks in full |
+  | **Moderate** | Column names are consistent with the platform but not distinctive to it | Apply platform rules, but **state that the identification is inferred** — a rule applied to a misidentified source is worse than no rule |
+  | **Weak** | Only a filename, a single suggestive column, or the user's say-so with no schema corroboration | Do **not** apply platform-specific semantic rules. Treat as a generic sheet and ask |
+  | **Unidentified** | No signal | As "Ambiguous source" above |
 
-  This feeds the metric registry's `mapping_confidence` field directly (`kpi-framework.md` §1): a column can only be mapped EXACT if its source is identified at HIGH confidence.
+  This feeds the metric registry's `mapping_confidence` field directly (`kpi-framework.md` §1): a column can only be mapped EXACT if its source identification is Strong.
 
 **Non-tabular and locale-specific sources — check before assuming a clean table:**
 - **PDF exports.** Extract tables first; if the PDF is a rendered dashboard screenshot or a narrative report rather than a real table, state that explicitly ("this PDF has no extractable table — figures below are read off the page, not parsed, and should be spot-checked") rather than silently treating OCR'd/read numbers as equivalent to a parsed export. **Multi-page PDF tables commonly repeat their header row on every page** — check that a repeated header hasn't been ingested as a data row (a giveaway: a "row" whose values are all column-name-shaped strings, not numbers).
@@ -50,7 +50,7 @@ When time-based data exists, analyze: MoM, WoW, YoY (where available), trend dir
 
 Do not overinterpret a single-period change. Distinguish: **Level → Change → Trend → Structural shift**.
 
-**Concentration risk — check before interpreting any trend as broad-based.** When any single dimension member (a channel, campaign, customer, or product) accounts for ≥50% of a metric's total in the window being analyzed, flag it explicitly before writing up a trend on that metric: "X% of this metric's movement traces to a single contributor — the trend is not broad-based." A trend driven by one contributor is fragile in a way a broad-based trend isn't, and reporting the aggregate move without naming the concentration risks implying stability that isn't there. Classify the flag FACT or RISK per the skill's existing labeling, not folded silently into the trend narrative.
+**Concentration risk — check before interpreting any trend as broad-based.** When any single dimension member (a channel, campaign, customer, or product) accounts for ≥50% of a metric's total in the window being analyzed, flag it explicitly before writing up a trend on that metric: "X% of this metric's movement traces to a single contributor — the trend is not broad-based." A trend driven by one contributor is fragile in a way a broad-based trend isn't, and reporting the aggregate move without naming the concentration risks implying stability that isn't there. State the concentration as a FACT framed as a RISK (`SKILL.md` §Label vocabulary), not folded silently into the trend narrative.
 
 **Unequal-length or partial-period comparisons — check before any MoM/WoW/YoY.** Confirm both periods cover the same number of days (and, where weekly seasonality matters, the same day-of-week composition) before comparing them as if the comparison were normal. The typical real-world instance: a dashboard requested mid-month, where "this month" is a partial period (e.g. the 1st–15th) and gets compared raw against a full prior month (the 1st–31st) — this reads as a sharp decline that is actually just fewer elapsed days, not a demand change. A partial current period must be labeled partial and compared against the **same elapsed-day window** of the prior period (1st–15th vs. 1st–15th), or — if a full-period comparison is genuinely needed — annotated with a run-rate projection explicitly labeled **Derived**, stating the method, never presented as a raw completed-period comparison.
 
@@ -75,7 +75,7 @@ Opportunity             = Incremental conversions × Expected value per converte
 - **Baseline CVR** — this stage's current rate.
 - **Recovery factor** — how much of that gap you actually expect to close, as a named scenario, not an implicit guess: **0.25 (conservative) / 0.50 (moderate) / 0.75 (aggressive)** unless you have a specific reason to use another value. State which scenario each number in a reported range uses.
 
-Report it as a range across at least two recovery-factor scenarios with a stated confidence (e.g. "₺0.9–1.8M/month at 0.25–0.50 recovery — Medium confidence, assumes AOV and target CVR both hold"), and label it **Derived**. This is what turns "checkout is the bottleneck" into a prioritization decision instead of an observation.
+Report it as a range across at least two recovery-factor scenarios with its assumptions named and the inputs' measurement confidence stated (§Confidence) — e.g. "₺0.9–1.8M/month at 0.25–0.50 recovery, assumes AOV and target CVR both hold; measurement confidence Medium (comparability: target CVR is from a CONDITIONAL segment)" — and label it **Derived**. This is what turns "checkout is the bottleneck" into a prioritization decision instead of an observation.
 
 ## Channel analysis
 
@@ -141,7 +141,7 @@ Measurement confidence is the weakest of three, not an average. (A BLOCKER on an
 |---|---|---|---|
 | **Data quality** | A WARNING on an input that materially moves the figure | WARNING-level issues that don't move the figure materially | Clean, or only INFO-level notes |
 | **Comparability** (`comparability-rules.md` "How to use this file") | A key input is NOT_COMPARABLE (the comparison isn't made) | CONDITIONAL or NORMALIZABLE | DIRECT, or a single-source figure with no comparison involved |
-| **Statistical support** (§Statistical sufficiency) | UNTESTED or INCONCLUSIVE | SUPPORTED, but the interval is wide enough that its two ends would lead to different decisions | SUPPORTED with an interval whose two ends lead to the same decision — or a plain total/count with no sampling question |
+| **Statistical support** (§Statistical sufficiency) | UNTESTED or INCONCLUSIVE | SUPPORTED, but the interval is wide enough that its two ends would lead to different decisions | SUPPORTED with an interval whose two ends lead to the same decision — or NOT APPLICABLE (a plain total/count with no sampling question) |
 
 Name the row holding the label down; a confidence label with no stated reason is no better than none.
 
@@ -157,29 +157,30 @@ Do not auto-label an anomaly a problem. **First test the alternative explanation
 
 `SKILL.md` step 6 caps every answer at 5-10 prioritized findings, and Operating Principle 8 names the three dimensions that set priority. That states the *criteria* but not the *procedure* — which leaves the actual selection as an unstated judgment call, exactly the kind of surface-level shortcut this skill's Overview says it exists to refuse.
 
-**This is deliberately a rule-based gate, not a numeric score.** A weighted 0-100 composite over "business impact" was considered and rejected more than once in this skill's development, for a real reason: it manufactures precision that the inputs don't have, and a single number hides which dimension actually drove it. What's needed isn't a score, it's a sequence of yes/no questions with a stated verdict. Run every candidate observation through all eight, in order. **A failure on 1 or 3, or a NEGLIGIBLE result on 2, is terminal — stop there, the verdict is set.** Questions 4–8 are all evaluated regardless of each other's answers, and the label block below reads them jointly — a "no" on 4, 6, or 7 changes how the finding is stated or capped, it doesn't end the evaluation:
+**This is deliberately a rule-based gate, not a numeric score.** A weighted 0-100 composite over "business impact" was considered and rejected more than once in this skill's development, for a real reason: it manufactures precision that the inputs don't have, and a single number hides which dimension actually drove it. What's needed isn't a score, it's a sequence of yes/no questions with a stated verdict. Run every candidate observation through all eight, in order. **A failure on 1 or 3 (outside the context exception in 3), or a NEGLIGIBLE result on 2, is terminal — stop there, the verdict is set.** Questions 4–8 are all evaluated regardless of each other's answers, and the label block below reads them jointly — a "no" on any of 4–8 changes how the finding is stated or capped, it doesn't end the evaluation:
 
 | # | Question | If no |
 |---|---|---|
-| 1 | **Is the change real?** Does it clear the data-quality gate — no BLOCKER on its inputs, not an artifact of a missing day, a totals row, or a partial period? | **SUPPRESS** — this is a data finding, not a business finding. Report it as a quality issue instead |
-| 2 | **Is it statistically supported?** Run the test the data's structure allows and read the interval against what would matter ("Statistical sufficiency" below). Four outcomes, not yes/no | **SUPPORTED** → continue. **NEGLIGIBLE** (interval is tight and rules out any effect large enough to matter) → **SUPPRESS** as a change; "held steady" may still earn one line. **INCONCLUSIVE** (interval includes zero *and* an effect large enough to matter) → continue, cap at MEDIUM, report as inconclusive with the interval — never as "no effect." **UNTESTED** (no compute tool, or no valid test for this structure) → continue, cap at MEDIUM, mark "directional, not statistically tested" |
-| 3 | **Is it material?** Does the magnitude (the point estimate, for an INCONCLUSIVE or UNTESTED move) matter against the business's own scale — not just against zero? | **SUPPRESS** — a 2% move on a metric representing 0.3% of revenue is arithmetic, not news. (A move that is real and small but genuinely worth a line as context lands at LOW via question 8, not here) |
-| 4 | **Is it broad-based?** I.e. does **no** single dimension member drive ≥50% of it (see Concentration risk above)? | Not a suppression — but the concentration **is** the finding, and must be stated as such rather than reported as a broad-based move |
+| 1 | **Is the change real?** Does it clear the data-quality gate — no BLOCKER on its inputs, not an artifact of a missing day, a totals row, or a partial period? | **SUPPRESS** — this is a data-quality issue, not a finding. Report it in the data-quality section with its severity instead (`SKILL.md` §Label vocabulary) |
+| 2 | **Is it statistically supported?** Run the test the data's structure allows and read the interval against what would matter ("Statistical sufficiency" below). Five outcomes, not yes/no | **SUPPORTED** → continue. **NOT APPLICABLE** (a plain population total or count with no sampling question, e.g. revenue booked in the period) → continue with no cap; the statistical-support row of measurement confidence reads High. **NEGLIGIBLE** → **SUPPRESS** as a change; it returns only as a "held steady" LOW context line under the exception in 3. **INCONCLUSIVE** → continue, cap at MEDIUM, report as inconclusive with the interval — never as "no effect" — except the volume-limit case (Step 3 below), which is not a finding. **UNTESTED** (no compute tool, no valid test for this structure, or a single-series read capped there by Step 1) → continue, cap at MEDIUM, mark "directional, not statistically tested" |
+| 3 | **Is it material?** Does the magnitude (the point estimate, for an INCONCLUSIVE or UNTESTED move) matter against the business's own scale — not just against zero? | **SUPPRESS** — a 2% move on a metric representing 0.3% of revenue is arithmetic, not news. **Context exception, the only non-terminal outcome of 1–3:** a small or NEGLIGIBLE move on a metric the reader needs as a guardrail for another finding, or that the user asked about, is kept as one LOW context line ("CVR held steady, 95% CI −0.2pp to +0.3pp") and skips 4–8 |
+| 4 | **Is it broad-based?** I.e. does **no** single dimension member drive ≥50% of it (see Concentration risk above)? | Not a suppression and not a cap — the concentration **is** the finding: restate it as such, and assign the label below to that restated finding rather than to a broad-based move |
 | 5 | **Is it economically important?** Can it be opportunity-sized, or tied to spend, margin, or retained revenue? | **MEDIUM** at most — an interesting movement with no economic handle isn't a critical one |
 | 6 | **Have all plausible alternative explanations been ruled out?** Run the anomaly-triage list and the hypothesis-elimination pattern above | Keep it, but it **cannot be CRITICAL** (HIGH at most — see the label block) and the untested alternative is stated explicitly — a finding with an open competing explanation is not CRITICAL |
 | 7 | **Is the evidence sufficient for the claim being made?** Grade it on the Evidence Ladder; an unqualified causal sentence needs E4/E5, a checked E3 design supports the conditional form only | Keep the observation, **rewrite the claim** down to what the evidence supports. Never downgrade the evidence tier to fit the story |
-| 8 | **Is it actionable?** Is there a decision, test, or investigation this changes? | **MEDIUM/LOW** — real but not urgent. Genuine context and guardrail metrics live here legitimately |
+| 8 | **Is it actionable?** Is there a decision, test, or investigation this changes? | **MEDIUM** if 5 passed (economically sized), **LOW** if 5 also failed — real but not urgent |
 
 Then assign, and **name which question drove the label**:
 
 ```
-CRITICAL  — material and SUPPORTED (2), clears 1, 3 and 5, actionable, no
-            unresolved alternative explanation (6 passed)
+CRITICAL  — material and SUPPORTED or NOT APPLICABLE (2), clears 1, 3 and 5,
+            actionable, no unresolved alternative explanation (6 passed)
 HIGH      — same, but 6 is open (the untested alternative is stated)
 MEDIUM    — real, but not economically sized (5 failed), not yet actionable
-            (8 failed), or statistically INCONCLUSIVE / UNTESTED (2)
-LOW       — real and small, or context/guardrail rather than decision-driving
-SUPPRESS  — fails 1 or 3, or NEGLIGIBLE on 2. Not shown as a finding
+            with 5 passed (8 failed), or statistically INCONCLUSIVE / UNTESTED (2)
+LOW       — fails both 5 and 8, or kept by the context exception in 3
+SUPPRESS  — fails 1 or 3 (outside the context exception), NEGLIGIBLE on 2, or
+            the INCONCLUSIVE volume-limit case. Not shown as a finding
 ```
 
 Priority says how much attention a finding deserves, not whether it is good news — direction (Favorable / Unfavorable / Neutral) is a separate field and the only one that carries color (`SKILL.md` §Label vocabulary). Question 7 never stays "open" in a delivered output: a claim the evidence can't support is rewritten until it can, so 7 shapes the wording of a finding, not its label.
@@ -194,24 +195,24 @@ Question 2 needs a decision rule, not a feeling, and the rule starts with whethe
 
 | Data structure | What fits | What doesn't |
 |---|---|---|
-| Two groups of *different* units, each counted once (A/B arms, two channels' users, two separate cohorts) | Two-proportion z-test / interval on the difference, for a rate. With small counts — by the usual rule of thumb, fewer than about 10 successes or 10 failures in either group — Fisher's exact test or an exact interval instead | — |
-| Before vs. after on one time series (this month's CVR vs. last month's) | A descriptive comparison. A two-proportion interval may be shown as a **sampling-noise floor only**: it answers "is this larger than binomial noise," not "did something change," because days are autocorrelated and seasonal and the same users can sit in both periods. Pair it with the trend gate and the same-period-last-cycle check (`comparability-rules.md` §2.6) | Reading its p-value as evidence that an intervention worked |
+| Two groups of *different* units, each counted once (A/B arms, two channels' users, two separate cohorts) | Two-proportion z-test / interval on the difference, for a rate. With small counts — by the usual rule of thumb, fewer than about 10 successes or 10 failures in either group — Fisher's exact test for the test, and a Newcombe (Wilson-score) interval for the difference, since Fisher yields a p-value and odds ratio, not the risk-difference interval Step 3 reads | — |
+| Before vs. after on one time series (this month's CVR vs. last month's) | A descriptive comparison. A two-proportion interval may be shown as a **sampling-noise floor only**: it answers "is this larger than binomial noise," not "did something change," because days are autocorrelated and seasonal and the same users can sit in both periods. Pair it with the trend gate and the same-period-last-cycle check (`comparability-rules.md` §2.6). **Highest outcome for question 2:** an interval excluding zero reads SUPPORTED only when both trend-gate bars also clear; otherwise the change is UNTESTED, with the noise-floor result stated alongside | Reading its p-value as evidence that an intervention worked |
 | The same units measured twice (same users or accounts in both periods) | A paired comparison — McNemar for a binary outcome, a paired difference for a continuous one — when unit-level rows are supplied | Treating the two periods as independent samples; it overstates precision |
 | Assignment by cluster (geo test, store-level or campaign-level rollout) | Analysis at the cluster level (one observation per geo), or cluster-robust intervals | Counting users as n — the effective sample is the number of clusters |
 | Continuous metrics (AOV, revenue per user) | Difference in means with a Welch interval; for heavy-tailed revenue, a bootstrap interval, or the median reported alongside | A proportion test |
-| Many comparisons at once (every channel × every metric, every segment) | Exploratory by default. Apply a correction (Holm) before calling any single result supported, or say how many comparisons were scanned | Reporting the one that crossed 95% as a finding |
-| Correlation between two series | n, the coefficient, and its interval; for time series, note that a shared trend or seasonality inflates R | R alone |
+| Many comparisons at once (every channel × every metric, every segment) | Exploratory by default. Before calling any single result supported, correct for the m comparisons scanned: Holm-adjusted p-values for the test, and intervals at the Bonferroni level (1 − 0.05/m) for the Step 3 read. Otherwise say how many comparisons were scanned | Reporting the one that crossed 95% as a finding |
+| Correlation between two series | n, the coefficient, and its interval. For time series, a shared trend or seasonality inflates R and invalidates the usual interval: correlate the differenced (or deseasonalized) series, or state that the interval is not valid | R alone |
 
 If the data is aggregated so the structure can't be determined — no unit-level rows, unknown overlap between periods — say so and treat the result as UNTESTED rather than assuming independence.
 
 **Step 2 — report these together, never a p-value alone:** the absolute difference (percentage points, for a rate), the relative change, the interval on the difference, and n per group. "CVR 2.0% → 2.4% (16/800 → 20/820: +0.4pp, +22% relative), 95% CI −1.0pp to +1.9pp." (A worked illustration, computed for two independent groups — with no compute tool the same case is reported UNTESTED, without an interval.) Where a decision hangs on the result, add what this sample could have detected — the minimum detectable effect at this n, or the n needed for the effect that would matter.
 
-**Step 3 — read the interval against what would matter.** "What would matter" is the user's stated target or threshold if they gave one; otherwise state the yardstick used (the metric's break-even, or its ordinary period-to-period variation). This gives question 2 its four outcomes:
+**Step 3 — read the interval against what would matter.** "What would matter" is the user's stated target or threshold if they gave one; otherwise state the yardstick used (the metric's break-even, or its ordinary period-to-period variation). The interval is the 95% interval, or the corrected level when several comparisons were scanned (Step 1). This gives question 2 its sampled outcomes (NOT APPLICABLE, the fifth, is a total with no sampling question at all):
 
-- **SUPPORTED** — the interval excludes zero.
-- **NEGLIGIBLE** — the interval is tight and excludes any effect that would matter. This, and only this, supports "no meaningful change."
-- **INCONCLUSIVE** — the interval includes zero *and* effects that would matter. The example above is one: the data cannot tell a 1.0pp drop from a 1.9pp gain. Report it as inconclusive, with the interval. **"Not statistically significant" is never written as "no effect" or "no change."** When the interval spans both a material loss and a material gain, report it once as a volume limit ("too little volume to read CVR for this segment") rather than as a movement.
-- **UNTESTED** — no compute tool, or no valid test for the structure.
+- **SUPPORTED** — the interval excludes zero *and* reaches an effect that would matter.
+- **NEGLIGIBLE** — the interval is tight and excludes any effect that would matter, whether or not it also excludes zero (a tight interval entirely between zero and the material threshold is NEGLIGIBLE, not SUPPORTED). This, and only this, supports "no meaningful change."
+- **INCONCLUSIVE** — the interval includes zero *and* effects that would matter. Report it as inconclusive, with the interval. **"Not statistically significant" is never written as "no effect" or "no change."** **Volume-limit case:** when the interval spans both a material loss and a material gain (the example above: the data cannot tell a 1.0pp drop from a 1.9pp gain), it is not a finding; state it once as a limitation ("too little volume to read CVR for this segment") rather than as a movement.
+- **UNTESTED** — no compute tool, no valid test for the structure, or a single-series before/after read that didn't clear the trend gate (Step 1).
 
 **No compute tool:** name the test the structure calls for, give the raw counts and the point difference, mark the result UNTESTED and directional (Operating Principle 11). Don't eyeball significance in either direction.
 
@@ -221,7 +222,7 @@ This skill reads results; it does not design experiments. When a decision needs 
 
 ## Data conflict resolution
 
-When two files disagree on the same KPI (e.g. Adjust 100K installs vs GA4 87K new users), **run the seven-point comparability checklist in `comparability-rules.md` §1 before concluding anything.** If a hard-block rule fires (§2 of that file), report the conflict using its refusal template — do not arbitrarily choose a side, and do not call either value "wrong" without evidence.
+When two files disagree on the same KPI (e.g. Adjust 100K installs vs GA4 87K new users), **run the seven-point comparability checklist in `comparability-rules.md` §1 before concluding anything.** If the comparison classifies NOT_COMPARABLE, report the conflict using its refusal template (§4 of that file); NORMALIZABLE and CONDITIONAL are reported with their conversion or caveat, not refused (`SKILL.md` non-negotiable rule 3). Either way, do not arbitrarily choose a side, and do not call either value "wrong" without evidence.
 
 ## Executive diagnosis (internal structure)
 

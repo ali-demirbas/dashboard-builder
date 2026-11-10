@@ -1,9 +1,19 @@
+import contextlib
+import io
 import os
 import sys
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 import check_links as cl  # noqa: E402
+
+
+def quiet(fn, *args):
+    """Run a checker with its stdout/stderr captured, so expected FAIL lines
+    from negative-path tests don't clutter a passing test run."""
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+        return fn(*args)
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 
@@ -17,10 +27,10 @@ class TestLinks(unittest.TestCase):
     def test_internal_links_resolve_in_this_repo(self):
         # Runs against the real repo tree — this is the check CI actually
         # relies on, not a synthetic fixture.
-        self.assertTrue(cl.check_internal_links())
+        self.assertTrue(quiet(cl.check_internal_links))
 
     def test_references_table_matches_disk(self):
-        self.assertTrue(cl.check_references_table())
+        self.assertTrue(quiet(cl.check_references_table))
 
     def test_link_regex_matches_are_all_skip_eligible(self):
         # LINK_RE itself doesn't distinguish external/anchor/relative — that's

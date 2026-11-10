@@ -1,6 +1,6 @@
 # Freshness Ledger — research corpus maintenance
 
-Not part of the skill's runtime behavior. The skill has no memory across sessions and can't check its own freshness — this is a maintenance tool for whoever (human or Claude) periodically revisits `research/raw/` and the vendor-specific facts baked into `skills/dashboard-builder/references/`.
+Not part of the skill's runtime behavior. The skill has no memory across sessions and can't check its own freshness — this is a maintenance tool for whoever (human or assistant) periodically revisits `research/raw/` and the vendor-specific facts baked into `skills/dashboard-builder/references/`.
 
 Every vendor-specific numeric fact in this skill (attribution window defaults, MAU windows, counting-rule specifics, API field names) is a snapshot as of when it was researched. Platforms change these without warning — the whole point of `comparability-rules.md`'s "Freshness note" is that configuration changes move numbers with no change in behavior, and that applies to the vendor facts recorded *about* those platforms too. This ledger exists so a refresh pass can find what's aging without re-reading every file cover to cover.
 
@@ -19,7 +19,7 @@ When doing a refresh pass on one platform's facts: find its row below, re-check 
 | Braze / Klaviyo / Iterable / Insider / D·engage (CRM/ESP) | 2026-08-13 | `comparability-rules.md` §2.2, §3, `kpi-framework.md` §6, `research/raw/crm-lifecycle-metrics.md` | Open/CTOR denominator conventions, incrementality display quirks | — |
 | SaaS/unit-economics benchmarks | 2026-08-13 | `kpi-framework.md` §7, `research/raw/unit-economics-metrics.md` | All benchmark tables — these are the fastest-aging facts in the skill, explicitly flagged (`kpi-framework.md` §7's own freshness note: treat >18-24 months as directional only) | — |
 | Data-quality tooling dimension taxonomy (benchmarked against, not named in skill files) | 2026-08-14 | `data-quality-gate.md` §1-§5, `research/raw/dbt-data-quality-tests.md` | Macro defaults (3σ/7-day/14-day window) | — |
-| Commercial AI-BI product mechanisms (metric-definition/insight architecture benchmarked against) | 2026-08-14 | `comparability-rules.md` Evidence Ladder, `dashboard-blueprints.md` caption types/QA gate | Product mechanisms move fast; re-verify before citing a specific named mechanism as still current | — |
+| Prior-art mechanisms (metric-definition/insight architecture benchmarked against) | 2026-08-14 | `comparability-rules.md` Evidence Ladder, `dashboard-blueprints.md` caption types/QA gate | Mechanisms move fast; re-verify before citing a specific mechanism as still current | — |
 
 **"Last verified" is the date the underlying fact was actually fetched and read, not the date a file was last edited for wording.** Update it only when the fact itself was re-checked against a live source.
 
@@ -61,3 +61,21 @@ Automated HTTP check of every source URL cited in `research/raw/` (187 links). *
 Claims in the skill that rest on a source in this table, or that this pass could not check against any primary source, are to be read as "per vendor documentation as last verified" and re-checked before they drive a decision.
 
 **Re-read in this pass (content, not just reachability):** Adjust's data-discrepancies page — still states "Google uses 30 days, Facebook uses 60 days." **Tried and could not re-read:** Meta's attribution-settings help page (returns only its title to an automated fetch), so Meta's current 7-day-click default stays "as last verified August 2026." The `dengage.com/knowledge-base` 404 supports no claim in the skill — it sits in a raw file's "not verified, deliberately omitted" list.
+
+## Content re-check — 2026-11-10
+
+Official pages re-read (content, not just reachability) for specific claims in `comparability-rules.md` / `kpi-framework.md`:
+
+| Claim | Source re-read | Result |
+|---|---|---|
+| LinkedIn 90-day click / 90-day view recommendation | `linkedin.com/help/lms/answer/a426359` | Still stated — unchanged |
+| TikTok view-window maximum | `ads.tiktok.com/help/article/attribution-settings-at-the-ad-group-level` | Click 1/7/14/28 days, view Off/1/7 days — wording clarified to "view window" |
+| Klaviyo open-rate denominator | `help.klaviyo.com/hc/en-us/articles/115002779351` (Recipients), `.../4708299478427` (delivered) | **Changed:** Klaviyo uses both depending on report |
+| Postmaster Tools reputation dashboards | `support.google.com/mail/answer/16594218` | **Changed:** Domain and IP Reputation dashboards retired in v2; Compliance status is the replacement |
+| Chrome third-party-cookie deprecation | `privacysandbox.google.com/blog/privacy-sandbox-next-steps` (22 Apr 2025) | **Changed:** no deprecation; current cookie-choice approach kept |
+| GA4 Google Signals / modeled data absent from BigQuery | `developers.google.com/analytics/blog/2023/bigquery-vs-ui` | Still stated — unchanged (a 2024 Signals/reporting-identity change was not confirmed on an official page) |
+| Yahoo spam-rate denominator | `senders.yahooinc.com/best-practices/` | Still "mail delivered to the inbox" — unchanged |
+| GA4 engaged-session timer | `support.google.com/analytics/answer/12131703` | 10 s default, adjustable; no maximum stated |
+| Apple Search Ads name | `ads.apple.com/news` (14 Apr 2025) | **Changed:** now Apple Ads |
+
+**Tried and could not re-read:** Meta's estimated/in-development metrics page (`facebook.com/business/help/181058782494426`, title only to automated fetch; the Marketing API page returned 404) — `spend` on the estimated list stays "as last verified August 2026." AppsFlyer's ROAS/revenue definitions (403) — ad-revenue inclusion is labeled unverified in the skill files.

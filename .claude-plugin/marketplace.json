@@ -7,7 +7,7 @@
     {
       "name": "dashboard-builder",
       "source": "./",
-      "description": "Marketing & growth dashboard builder: turns fragmented data (GA4, Adjust, AppsFlyer, ad platforms, CRM/ESP, e-commerce) into KPI diagnosis, cross-channel comparability checks, and executive dashboard or presentation output."
+      "description": "Marketing & growth dashboard builder. Turns fragmented data from Adjust, AppsFlyer, GA4, Firebase, Play Console, Search Console, Braze, Insider, D·engage, Klaviyo, Iterable, Google/Meta/TikTok/LinkedIn Ads, CRM, e-commerce, subscription, cohort and finance sheets into KPI analysis, cross-channel comparability checks, cross-platform reconciliation, and executive dashboard or presentation output."
     }
   ]
 }
