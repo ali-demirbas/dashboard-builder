@@ -184,3 +184,7 @@ Skill content is internally consistent across 27 development passes. Execution-t
 ## Prior art
 
 The structural patterns here draw on [aaron-he-zhu/aaron-marketing-skills](https://github.com/aaron-he-zhu/aaron-marketing-skills) (Apache-2.0) for the KPI-matrix format with action triggers and the proxy-vs-outcome measurement model, and on [ai-analyst-lab/ai-analyst](https://github.com/ai-analyst-lab/ai-analyst) (MIT) for the metric-spec template and the severity-graded data-quality gate.
+
+---
+
+Built by [Ali Demirbaş](https://alidemirbas.com.tr)
