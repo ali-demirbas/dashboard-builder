@@ -30,9 +30,10 @@ jobs:
   # dbcalc ships with the skill and promises Python 3.9+; run its tests on the
   # oldest and a current version, with the optional openpyxl installed so the
   # xlsx paths (hidden sheets, summary vs. detail) run too. No model calls:
-  # evals/run_evals.py spends tokens and is never run in CI.
+  # evals/run_evals.py spends tokens and is never run in CI. Pinned to
+  # ubuntu-24.04 because newer runner images no longer provide Python 3.9.
   dbcalc:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         python-version: ["3.9", "3.12"]
