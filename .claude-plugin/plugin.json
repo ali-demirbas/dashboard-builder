@@ -1,6 +1,6 @@
 {
   "name": "dashboard-builder",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Marketing & growth dashboard builder. Turns fragmented data from Adjust, AppsFlyer, GA4, Firebase, Play Console, Search Console, Braze, Insider, D·engage, Klaviyo, Iterable, Google/Meta/TikTok/LinkedIn Ads, CRM, e-commerce, subscription, cohort and finance sheets into KPI analysis, cross-channel comparability checks, cross-platform reconciliation, and executive dashboard or presentation output.",
   "author": {
     "name": "Ali Demirbaş"

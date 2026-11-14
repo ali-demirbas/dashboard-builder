@@ -1,0 +1,39 @@
+{
+  "id": "decompose-simpson",
+  "maps_to": "T-N13",
+  "description": "Both device CVRs rise, blended CVR falls: Kitagawa rate +0.5pp, mix -1.2pp, Simpson flag.",
+  "argv": [
+    "decompose",
+    "segment_cvr.csv",
+    "--segment-col",
+    "device",
+    "--num",
+    "orders",
+    "--den",
+    "sessions",
+    "--period-col",
+    "month",
+    "--base",
+    "2026-09",
+    "--compare",
+    "2026-10"
+  ],
+  "assert": [
+    {
+      "path": "blended_change",
+      "approx": -0.007
+    },
+    {
+      "path": "rate_effect",
+      "approx": 0.005
+    },
+    {
+      "path": "mix_effect",
+      "approx": -0.012
+    },
+    {
+      "path": "simpsons_paradox",
+      "equals": true
+    }
+  ]
+}

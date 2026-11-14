@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.0 (2026-11-14)
+
+- Period echo: every output states each source's exact covered dates and export date, and flags a period that doesn't match the request.
+- One provisional rule for values still inside a reporting lag or attribution window; they never carry a CRITICAL or HIGH finding alone.
+- Goals intake: targets and margin are asked for only when a requested number depends on them; no invented targets.
+- Mix vs rate decomposition for blended rates, with a Simpson's-paradox guard.
+- Sample ratio mismatch check before any test, holdout or lift result is read.
+- Reconciliation adds a platform over-claim line against the first-party record; the sum of platform claims appears only there.
+- "Not recommended yet" list for likely actions the evidence doesn't support, in answers, dashboards and decks.
+- Output language: the user's language for text and fixed phrases, English label tokens, locale number formatting.
+- Computation layer: a standard-library Python CLI inside the skill profiles every file first and runs aggregates, join audits, cohort matrices, anomaly scans and the statistical tests instead of in-context arithmetic.
+- Calc trace: every computed figure gets a trace row; dashboards show "How each number was computed", decks carry it in Methodology, long answers end with a trace table, long traces are trimmed to the figures shown.
+- Contribution analysis for "why did this total move", with "no single driver" when nothing dominates.
+- Eval harness: synthetic fixtures with pinned computation results checked in CI, and ten behavioral cases run by hand.
+- Worked example on synthetic data: dashboard, deck, answer and calc trace.
+- Regression-audit fixes: a full-population rate change is NOT APPLICABLE like a total, so it can reach HIGH; one fan-out definition for joins; channel-level files with spend on paid channels map to Growth & Acquisition; opportunity sizing without margin is revenue, not profit; no causal verb in the decomposition slide's label; stronger routing for marketing workbooks.
+- Sixteen regression cases added (76 in all).
+
 ## 0.3.0
 
 - Routing by request type: analysis, diagnosis and reconciliation requests are answered directly with no template or format question; a named or single fitting dashboard template is built in the same response.

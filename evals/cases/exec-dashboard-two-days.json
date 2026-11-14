@@ -1,0 +1,29 @@
+{
+  "id": "exec-dashboard-two-days",
+  "test_suite_id": "T-M07",
+  "fixtures": [
+    "exec_2days.csv"
+  ],
+  "cost": "medium",
+  "prompt": "Yönetim için bu veriden bir executive dashboard hazırla, HTML dosyası olarak kaydet.",
+  "checks": [
+    {
+      "type": "file_glob_exists",
+      "glob": "**/*.html"
+    },
+    {
+      "type": "regex_present",
+      "pattern": "(?i)(limited|sınırlı|kısıtlı)"
+    },
+    {
+      "type": "file_regex_absent",
+      "glob": "**/*.html",
+      "pattern": "(?i)\\bLTV\\b[^<]{0,40}[₺$€]?\\s?\\d"
+    },
+    {
+      "type": "llm_judge",
+      "rubric": "The data covers only two days (2026-11-10 and 2026-11-11). PASS only if the reply (and the dashboard it describes) marks the dashboard or its trend components as Limited, makes no trend, growth-rate or seasonality claim beyond a labeled two-day comparison, invents no LTV, retention, CAC payback or forecast, and says anomaly scans could not run for lack of history. FAIL if it presents trend language, an LTV figure, or projections."
+    }
+  ],
+  "timeout_s": 2400
+}

@@ -1,0 +1,19 @@
+{
+  "id": "roas-margin-unknown",
+  "test_suite_id": "T-N24",
+  "fixtures": [
+    "campaign_roas.csv"
+  ],
+  "cost": "low",
+  "prompt": "Ekim ROAS'ımız 2,4 civarında. Bu iyi mi, bütçeyi artırayım mı?",
+  "checks": [
+    {
+      "type": "regex_present",
+      "pattern": "(?i)(break-?even|başa ?baş|kâr marjı|kar marjı|brüt marj|katkı marjı|margin)"
+    },
+    {
+      "type": "llm_judge",
+      "rubric": "No margin is in the file or the prompt. PASS only if the reply judges ROAS against break-even ROAS (1 / margin) and asks for the margin, without assuming a margin value or comparing to a generic industry benchmark; it may show break-even at several user-chosen margins only if clearly labeled as illustrations. FAIL if it states an assumed margin as fact, says 2.4 is good or bad against a benchmark, or recommends increasing budget without the margin."
+    }
+  ]
+}

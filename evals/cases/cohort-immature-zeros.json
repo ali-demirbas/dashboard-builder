@@ -1,0 +1,19 @@
+{
+  "id": "cohort-immature-zeros",
+  "test_suite_id": "T-N07",
+  "fixtures": [
+    "retention_cohorts.csv"
+  ],
+  "cost": "low",
+  "prompt": "Ekteki haftalık cohort retention export'unu 2 Kasım 2026'da aldık. Son haftaların cohort'larında D30 ve D60 retention sıfıra çakılmış görünüyor. Retention çöktü mü? Kısa bir analiz yap.",
+  "checks": [
+    {
+      "type": "regex_present",
+      "pattern": "(?i)(olgunla|immature|henüz|gözlen|censor|tamamlanma|yaşı|not available|mevcut değil)"
+    },
+    {
+      "type": "llm_judge",
+      "rubric": "PASS only if the reply explains that the zero D30/D60 values in recent cohorts are cells not yet observed at the 2026-11-02 export (cohorts younger than the horizon), not churn, and reports D30/D60 only over mature cohorts (about 14% D30 over 8 mature cohorts) or as not available for the young cohorts. FAIL if it reads the zeros as a retention collapse, averages them into a rate, or recommends action against a collapse."
+    }
+  ]
+}

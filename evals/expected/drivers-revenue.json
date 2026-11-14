@@ -1,0 +1,44 @@
+{
+  "id": "drivers-revenue",
+  "maps_to": null,
+  "description": "Revenue fell 18,300; Paid search carries more than all of it (offset by small gains elsewhere); drill shows TR inside Paid search.",
+  "argv": [
+    "drivers",
+    "revenue_drivers.csv",
+    "--metric-col",
+    "revenue",
+    "--period-col",
+    "month",
+    "--base",
+    "2026-09",
+    "--compare",
+    "2026-10",
+    "--dims",
+    "channel,country"
+  ],
+  "assert": [
+    {
+      "path": "total_change",
+      "approx": -18300
+    },
+    {
+      "path": "dimensions.0.top_contributor",
+      "equals": "Paid search"
+    },
+    {
+      "path": "dimensions.0.concentrated",
+      "equals": true
+    },
+    {
+      "path": "dimensions.0.offsetting",
+      "equals": [
+        "Paid social",
+        "Email"
+      ]
+    },
+    {
+      "path": "drill.ranked.0.value",
+      "equals": "TR"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "profile-channel-daily-tr",
+  "maps_to": "T-N17",
+  "description": "Turkish-locale copy: semicolon, decimal comma over the full column, dd.mm.yyyy settled by days > 12, cp1254, trailing Genel Toplam row whose stated totals match the row sums.",
+  "argv": [
+    "profile",
+    "channel_daily_tr.csv"
+  ],
+  "assert": [
+    {
+      "path": "delimiter",
+      "equals": ";"
+    },
+    {
+      "path": "encoding",
+      "equals": "cp1254"
+    },
+    {
+      "path": "tables.0.decimal_convention",
+      "equals": "comma"
+    },
+    {
+      "path": "tables.0.date_columns.0.order",
+      "equals": "dmy"
+    },
+    {
+      "path": "tables.0.date_columns.0.period",
+      "equals": {
+        "first": "2026-08-01",
+        "last": "2026-10-31"
+      }
+    },
+    {
+      "path": "tables.0.totals_rows.0.row",
+      "equals": 369
+    },
+    {
+      "path": "tables.0.totals_rows.0.reason",
+      "equals": "total_label"
+    },
+    {
+      "path": "tables.0.measure_sums_excl_totals.Gelir",
+      "approx": 4005316.19
+    },
+    {
+      "path": "tables.0.measure_sums_excl_totals.Oturum",
+      "approx": 2448936
+    }
+  ]
+}

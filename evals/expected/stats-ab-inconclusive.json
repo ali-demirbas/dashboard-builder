@@ -1,0 +1,35 @@
+{
+  "id": "stats-ab-inconclusive",
+  "maps_to": "T-N04",
+  "description": "16/800 vs 20/820 with a 0.5pp material threshold: INCONCLUSIVE, volume-limit case.",
+  "argv": [
+    "stats",
+    "prop-diff",
+    "16",
+    "800",
+    "20",
+    "820",
+    "--material",
+    "0.005",
+    "--structure",
+    "independent"
+  ],
+  "assert": [
+    {
+      "path": "ci_low",
+      "approx": -0.010538469778876654
+    },
+    {
+      "path": "ci_high",
+      "approx": 0.019459895702889758
+    },
+    {
+      "path": "classification.outcome",
+      "equals": "INCONCLUSIVE"
+    },
+    {
+      "path": "classification.volume_limit",
+      "equals": true
+    }
+  ]
+}

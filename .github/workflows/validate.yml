@@ -16,7 +16,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Run unit tests (frontmatter, link and shipped-content checkers)
+      - name: Run unit tests (checkers, dbcalc known-answer tests, eval fixture expectations)
+        # Standard library only here: the dbcalc xlsx and scipy cross-check
+        # tests skip, which also exercises the no-openpyxl path.
         run: python3 -m unittest discover -s tests -v
       - name: Run repo validation
         # Single entry point: frontmatter, internal links, the SKILL.md
@@ -24,6 +26,25 @@ jobs:
         # content scan, consolidated-file staleness (ledger pass numbers and
         # a content diff against a fresh rebuild).
         run: bash scripts/validate.sh
+
+  # dbcalc ships with the skill and promises Python 3.9+; run its tests on the
+  # oldest and a current version, with the optional openpyxl installed so the
+  # xlsx paths (hidden sheets, summary vs. detail) run too. No model calls:
+  # evals/run_evals.py spends tokens and is never run in CI.
+  dbcalc:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install optional xlsx reader
+        run: python -m pip install "openpyxl==3.1.5"
+      - name: Run dbcalc tests
+        run: python -m unittest discover -s tests -p "test_dbcalc*.py" -v
 
   # A separate job, not another step: a shell defect in the validator must
   # not be reported as (or hidden behind) a content failure, and the two run

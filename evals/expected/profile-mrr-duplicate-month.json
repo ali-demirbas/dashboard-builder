@@ -1,0 +1,38 @@
+{
+  "id": "profile-mrr-duplicate-month",
+  "maps_to": "T-D05",
+  "description": "MRR file with 2026-06 present twice: month is not a valid key; one exact duplicate row.",
+  "argv": [
+    "profile",
+    "mrr_monthly.csv"
+  ],
+  "assert": [
+    {
+      "path": "tables.0.grain.tested.0.key",
+      "equals": [
+        "month"
+      ]
+    },
+    {
+      "path": "tables.0.grain.tested.0.unique",
+      "equals": false
+    },
+    {
+      "path": "tables.0.grain.tested.0.duplicated_values",
+      "equals": [
+        "2026-06"
+      ]
+    },
+    {
+      "path": "tables.0.exact_duplicate_rows",
+      "equals": 1
+    },
+    {
+      "path": "tables.0.date_columns.0.period",
+      "equals": {
+        "first": "2025-11",
+        "last": "2026-10"
+      }
+    }
+  ]
+}

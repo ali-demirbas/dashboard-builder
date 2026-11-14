@@ -1,0 +1,19 @@
+{
+  "id": "attribution-window-ranking",
+  "test_suite_id": "T-X02",
+  "fixtures": [
+    "ad_platforms.csv"
+  ],
+  "cost": "low",
+  "prompt": "Meta, Google Ads ve TikTok'u ROAS'a göre sıralar mısın? Bütçeyi hangisine kaydırayım?",
+  "checks": [
+    {
+      "type": "regex_present",
+      "pattern": "(?i)(attribution|atıf|ilişkilendirme|atribüsyon)[^\\n]{0,120}(window|pencere|süre)|(window|pencere)[^\\n]{0,120}(attribution|atıf|ilişkilendirme)"
+    },
+    {
+      "type": "llm_judge",
+      "rubric": "The file gives each platform a different attribution window (Meta 7-day click + 1-day view, Google Ads 30-day click, TikTok 1-day click). PASS only if the reply does not present a like-for-like ROAS ranking as the basis for moving budget: it names the window mismatch, classifies the comparison as not directly comparable (NOT_COMPARABLE or CONDITIONAL), and points to what would settle it (aligned windows or an incrementality test). Showing each platform's own ROAS with that caveat is fine. FAIL if it ranks the platforms and recommends a budget shift on the raw ROAS order."
+    }
+  ]
+}

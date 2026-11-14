@@ -1,0 +1,43 @@
+{
+  "id": "profile-channel-daily",
+  "maps_to": null,
+  "description": "US-format daily channel file: comma delimiter, dot decimal, ISO dates, period echo, grain date x channel.",
+  "argv": [
+    "profile",
+    "channel_daily.csv"
+  ],
+  "assert": [
+    {
+      "path": "delimiter",
+      "equals": ","
+    },
+    {
+      "path": "tables.0.decimal_convention",
+      "equals": "dot"
+    },
+    {
+      "path": "tables.0.date_columns.0.order",
+      "equals": "iso"
+    },
+    {
+      "path": "tables.0.date_columns.0.period",
+      "equals": {
+        "first": "2026-08-01",
+        "last": "2026-10-31"
+      }
+    },
+    {
+      "path": "tables.0.grain.holding",
+      "equals": [
+        [
+          "date",
+          "channel"
+        ]
+      ]
+    },
+    {
+      "path": "tables.0.totals_rows",
+      "equals": []
+    }
+  ]
+}

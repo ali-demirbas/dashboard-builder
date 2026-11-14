@@ -1,0 +1,46 @@
+{
+  "id": "cohort-right-censoring",
+  "maps_to": "T-N07",
+  "description": "Weekly cohorts exported 2026-11-02 with unobserved cells filled with 0: 17 censored cells, all zero-filled; D30 over 8 mature cohorts only.",
+  "argv": [
+    "cohort",
+    "retention_cohorts.csv",
+    "--cohort-col",
+    "cohort_week",
+    "--wide",
+    "--size-col",
+    "cohort_size",
+    "--export-date",
+    "2026-11-02"
+  ],
+  "assert": [
+    {
+      "path": "cohort_span",
+      "equals": "week"
+    },
+    {
+      "path": "cells.censored",
+      "equals": 17
+    },
+    {
+      "path": "cells.censored_zero_filled",
+      "equals": 17
+    },
+    {
+      "path": "horizons.3.horizon",
+      "equals": "d30"
+    },
+    {
+      "path": "horizons.3.mature_cohorts",
+      "equals": 8
+    },
+    {
+      "path": "horizons.3.weighted_rate",
+      "approx": 0.14309428950863215
+    },
+    {
+      "path": "horizons.3.naive_rate_if_censored_read_as_zero",
+      "approx": 0.08139242099962231
+    }
+  ]
+}

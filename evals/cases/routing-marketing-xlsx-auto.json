@@ -1,0 +1,18 @@
+{
+  "id": "routing-marketing-xlsx-auto",
+  "test_suite_id": "T-N26",
+  "metric": "routing",
+  "invoke": "auto",
+  "fixtures": [
+    "marketing_channels.xlsx"
+  ],
+  "cost": "low",
+  "prompt": "Ekteki Excel'de haftalık kanal performansı var. Hangi kanal iyi gidiyor, hangisi kötü? Kısa bir analiz yap.",
+  "note": "Routing metric: the plain prompt (no slash command) must make the session pick dashboard-builder among the installed skills (run_evals.py --routing-env installed, the default). The skill_invoked check is the measurement; the other check only guards that an analysis was attempted.",
+  "checks": [
+    {
+      "type": "regex_present",
+      "pattern": "(?i)(paid search|paid social|email|organic|direct|kanal)"
+    }
+  ]
+}

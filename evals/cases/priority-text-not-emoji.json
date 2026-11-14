@@ -1,0 +1,20 @@
+{
+  "id": "priority-text-not-emoji",
+  "test_suite_id": "T-N02",
+  "fixtures": [
+    "channel_daily.csv"
+  ],
+  "cost": "low",
+  "prompt": "Bu kanal verisini analiz et ve en önemli bulguları önceliklendirerek listele.",
+  "checks": [
+    {
+      "type": "regex_absent",
+      "pattern": "[🔴🟠🟡🟢🟥🟧🟨🟩⚪⚫]"
+    },
+    {
+      "type": "regex_present",
+      "pattern": "\\b(CRITICAL|HIGH|MEDIUM|LOW)\\b",
+      "note": "labels stay in English in every language (SKILL.md principle 12); a translated label (KRİTİK, YÜKSEK...) fails"
+    }
+  ]
+}

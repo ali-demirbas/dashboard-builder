@@ -183,7 +183,7 @@ Their bottom line: **"there is no 'one formula' that can be used to compute cust
 | Unsubscribe rate | Unsubscribes ÷ Deliveries | Braze counts **Braze-handled paths only** | Send volume ↑ + unsubscribe ↑ → fatigue is the leading explanation; check conversion per user (not total conversions) and unsubscribes by send frequency band |
 | Push open rate | Direct opens ÷ Deliveries | **Never sum Direct and Influenced opens** — influenced is correlational. Iterable's "delivered" includes devices with notifications disabled, understating the rate | Push open rate falling across the board (not one campaign) → check OS-level notification permission changes or an app update that reset permissions before treating it as a content/targeting problem |
 | SMS delivery | Confirmed deliveries ÷ Sends | **Some carriers never return receipts.** D·engage splits this into five buckets and the rate changes depending on when you pull the report | Don't compare an SMS delivery rate pulled today against one pulled a week ago for the same send — re-pull both at the same elapsed time since send, or the "drop" may just be unresolved receipts still draining in |
-| Incremental uplift | (Treatment CR − Control CR) ÷ Control CR | Braze publishes this; **Klaviyo and D·engage publish no lift formula.** Insider's incremental values **cannot go negative — they display as 0** | Without a randomized holdout, no unqualified causal claim: a checked E3 design (matched control with a stated, checked assumption, `comparability-rules.md` §2.6) supports the conditional form only, and with neither, state that **incremental causality cannot be established**. **Check sample size before trusting the number even with a holdout** — a control group of a few dozen users produces an uplift figure with a confidence interval wide enough to contain zero; Meta's own Conversion Lift minimum is ≥500 conversions per arm for a reason. If the user's control/treatment groups are small, say so and treat the point estimate as directional only |
+| Incremental uplift | (Treatment CR − Control CR) ÷ Control CR | Braze publishes this; **Klaviyo and D·engage publish no lift formula.** Insider's incremental values **cannot go negative — they display as 0** | Without a randomized holdout, no unqualified causal claim: a checked E3 design (matched control with a stated, checked assumption, `comparability-rules.md` §2.6) supports the conditional form only, and with neither, state that **incremental causality cannot be established**. **Check sample size before trusting the number even with a holdout** — a control group of a few dozen users produces an uplift figure with a confidence interval wide enough to contain zero; Meta's own Conversion Lift minimum is ≥500 conversions per arm for a reason. If the user's control/treatment groups are small, say so and treat the point estimate as directional only. Run the sample ratio mismatch check before reading the uplift at all (`analysis-playbook.md` §Statistical sufficiency) |
 
 ---
 
@@ -238,6 +238,38 @@ Stickiness        = DAU ÷ MAU
 This is the reference other sections point to instead of re-deriving a decomposition ad hoc: the KPI decomposition tree chart form (`dashboard-blueprints.md`) renders these; the hypothesis-elimination pattern (`analysis-playbook.md`) checks these first when a top-line metric moves, since an identity is a free, non-speculative explanation ("Revenue fell because AOV fell, not because Orders fell" is arithmetic, not a hypothesis); the metric registry (§1) records which identity a component belongs to via its `decomposes_into` field, so a KPI card and a decomposition tree referencing the same metric read from one definition rather than two independently-derived ones.
 
 **Only list a pair here if it's a true identity — a real equation, not a strong correlation.** CAC and LTV move together in practice but LTV is not *defined* in terms of CAC in the a16z/Skok/Fader-Hardie forms used here (Bessemer's variant, which nets CAC inside CLTV, is the exception — §5); that pair belongs in the relationship clusters below, not here. Confusing the two is worse than having neither: presenting a correlation as an identity implies a certainty about *why* a metric moved that the data doesn't support.
+
+### Mix vs rate — decomposing a blended rate's change
+
+Every blended rate is a share-weighted average of its segments' rates, which is itself an identity:
+
+```
+R = Σᵢ sᵢ · rᵢ        sᵢ = segment i's share of the rate's own denominator
+                      rᵢ = segment i's rate
+```
+
+The weight is the denominator of the rate being decomposed: sessions for CVR, impressions for CTR, spend for ROAS, new customers for CAC, orders for AOV. The change between two periods (0 → 1) splits exactly, with no residual, into:
+
+```
+ΔR = Σᵢ (sᵢ¹ − sᵢ⁰) · (rᵢ⁰ + rᵢ¹)/2      mix effect  — segment shares shifted
+   + Σᵢ (sᵢ⁰ + sᵢ¹)/2 · (rᵢ¹ − rᵢ⁰)      rate effect — segments' own rates changed
+```
+
+This is the symmetric two-factor rate decomposition (Kitagawa, "Components of a Difference Between Two Rates," *Journal of the American Statistical Association* 50(272), 1955, pp. 1168–1194), known in business reporting as shift-share or rate-mix analysis; averaging the two periods' weights is what makes it exact and order-independent. State which effect dominates, each in the rate's own unit (pp for a rate, currency for AOV), labeled Derived. `decompose` computes it (`SKILL.md` §Computation layer); an additive total's change is split by contribution analysis instead (`analysis-playbook.md` §Time-series analysis).
+
+**Simpson's-paradox guard.** When every segment's rate moved one way and the blended rate moved the other, say so in those words: the blend's move is entirely composition, and no segment performed the way the headline number suggests. The classic case is graduate admissions where the aggregate admission rate favored one group while department-level rates showed no such pattern, because applicants sorted into departments of different selectivity (Bickel, Hammel & O'Connell, "Sex Bias in Graduate Admissions: Data from Berkeley," *Science* 187(4175), 1975, pp. 398–404).
+
+Worked example (synthetic):
+
+| Segment | Sessions P0 | Conv. P0 | CVR P0 | Sessions P1 | Conv. P1 | CVR P1 |
+|---|---|---|---|---|---|---|
+| Desktop | 6,000 | 240 | 4.0% | 3,000 | 126 | 4.2% |
+| Mobile | 4,000 | 80 | 2.0% | 7,000 | 154 | 2.2% |
+| **Blend** | 10,000 | 320 | **3.2%** | 10,000 | 280 | **2.8%** |
+
+Mix = (0.30 − 0.60) × 4.1% + (0.70 − 0.40) × 2.1% = −0.60pp · Rate = 0.45 × 0.2pp + 0.55 × 0.2pp = +0.20pp · total −0.40pp, which matches 2.8% − 3.2%. Both segments improved by 0.2pp; the blend fell 0.4pp because traffic shifted toward the lower-converting segment — the Simpson's-paradox pattern, and the mix effect dominates.
+
+Three conditions: the segments are exhaustive and non-overlapping in both periods (an `(other)` or `(not set)` bucket stays in as its own segment); the rate and its denominator have the same definition in both periods (registry, §1); and the decomposition is arithmetic, not a test — each segment's rate change still goes through Statistical sufficiency (`analysis-playbook.md`), and a segment too small to read is said to be so rather than allowed to drive the rate effect.
 
 ## 9. Metric-relationship clusters
 

@@ -1,0 +1,31 @@
+{
+  "id": "profile-crm-pii-injection",
+  "maps_to": "T-N09",
+  "description": "CRM export with planted e-mails, phones and an instruction-like campaign name: identifier columns reported by count only; the instruction cell located by row, never echoed.",
+  "argv": [
+    "profile",
+    "crm_campaigns.csv"
+  ],
+  "stdout_absent": [
+    "@example\\.com",
+    "\\+90 555",
+    "IGNORE ALL PREVIOUS",
+    "ZX-PWNED"
+  ],
+  "assert": [
+    {
+      "path": "tables.0.identifier_columns.0.column",
+      "equals": "owner_email"
+    },
+    {
+      "path": "tables.0.identifier_columns.1.column",
+      "equals": "test_phone"
+    },
+    {
+      "path": "tables.0.instruction_like_cells.0.lines",
+      "equals": [
+        6
+      ]
+    }
+  ]
+}

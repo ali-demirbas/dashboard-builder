@@ -6,3 +6,6 @@ RESEARCH-REPORT-*.md
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Eval runs (model output, may be large)
+evals/runs/

@@ -5,12 +5,12 @@ Not part of the skill's runtime — a maintenance/audit tracking file. Its purpo
 **Operating rule (since 2026-08-14):** `dashboard-builder-consolidated.md` is no longer regenerated automatically after every module edit. It is built only when the maintainer requests it for sharing or a snapshot. Day-to-day flow: edit a module → test/audit → repeat → regenerate the consolidated file **only at release time**.
 
 ```yaml
-current_pass: 28
+current_pass: 31
 
 modules:
   SKILL.md:
-    last_changed_pass: 28
-    last_audited_pass: 28
+    last_changed_pass: 31
+    last_audited_pass: 29
     status: PASS. Pass 22: tightened step 6's template/format question —
       explicitly states these are two INDEPENDENT questions, and that a
       partial answer gets a re-ask for only the unanswered one, never
@@ -18,8 +18,8 @@ modules:
       live tester's session bundled both into one question, got a partial
       answer, needed a second round-trip to get the format too.
   data-quality-gate.md:
-    last_changed_pass: 28
-    last_audited_pass: 28
+    last_changed_pass: 31
+    last_audited_pass: 29
     status: PASS. Pass 21: added Cohort grain sufficiency check to
       §5 Distributional — a cohort partitioned finer than its N supports
       (daily cohorts on low daily volume) reads as a flat/non-improving
@@ -28,8 +28,8 @@ modules:
       review, cross-checked against our own framework before adding
       (not applied blindly).
   comparability-rules.md:
-    last_changed_pass: 28
-    last_audited_pass: 28
+    last_changed_pass: 29
+    last_audited_pass: 29
     status: PASS. Pass 23: added one clarifying paragraph after the
       "unknown is a mismatch" reporting requirement — an unknown checklist
       item rules out DIRECT specifically, it does not by itself force
@@ -41,12 +41,12 @@ modules:
       by default, not NOT_COMPARABLE) — this was a communication gap, not
       an architecture gap, so no new taxonomy was added.
   kpi-framework.md:
-    last_changed_pass: 28
-    last_audited_pass: 28
+    last_changed_pass: 30
+    last_audited_pass: 29
     status: PASS
   analysis-playbook.md:
-    last_changed_pass: 28
-    last_audited_pass: 28
+    last_changed_pass: 31
+    last_audited_pass: 29
     status: PASS. Pass 23: two fixes from an external adversarial review,
       both verified against source before applying. (a) REAL BUG: Insight
       Candidate Engine question 6 was logically inverted — the table's own
@@ -66,8 +66,8 @@ modules:
       run. Addresses part of the standing insight-ranking-consistency open
       finding (still not fully closed — see open_findings below).
   dashboard-blueprints.md:
-    last_changed_pass: 28
-    last_audited_pass: 28
+    last_changed_pass: 31
+    last_audited_pass: 29
     status: PASS. Pass 21: added a Responsive layout paragraph to
       §Rendering mechanism — SVG viewBox/scaling requirement + a stated
       ~768px reflow breakpoint (KPI strip to 2 cols, chart row to 1 col,
@@ -92,8 +92,8 @@ modules:
       is not. The two files now say the same thing instead of the QA gate
       being stricter than the rule it's supposed to enforce.
   presentation-blueprints.md:
-    last_changed_pass: 28
-    last_audited_pass: 28
+    last_changed_pass: 31
+    last_audited_pass: 29
     status: PASS. Pass 19 carried 1 open correction (real 8-slide deck
       built for a live GA4 property via a PPTX toolkit;
       structural validation passed, content QA clean, visual QA caught
@@ -114,6 +114,22 @@ modules:
       confidence caveats) may not be dropped. Rejected the paired
       suggestion to make Methodology fully conditional/removable — that
       would contradict non-negotiable rule 1 (disclose every gap).
+  scripts/README.md:
+    last_changed_pass: 31
+    last_audited_pass: 30
+    status: PASS. The dbcalc reference (commands, options, output fields,
+      trace format, methods cited), listed in SKILL.md's references table.
+      Pass 31 - carries the computation-to-command table moved out of
+      SKILL.md, and is now a Part of the consolidated file. The ledger
+      pass check in validate.sh only reads names without a slash, so this
+      entry is tracked by the content diff (validate.sh check 6).
+  scripts/dbcalc.py:
+    last_changed_pass: 31
+    last_audited_pass: 30
+    status: PASS. Computation layer (dbcalc.py + dbcalc_core/, standard
+      library, openpyxl optional). Added pass 30; pass 31 adds aggregate
+      and trace render --lang. Not in the consolidated file; covered by
+      tests/test_dbcalc_*.py and evals/expected/ in CI.
 
 open_findings:
   - id: insight-ranking-consistency
@@ -126,11 +142,14 @@ open_findings:
   - id: test-suite-coverage
     area: TEST-SUITE-regression-benchmark.md
     note: >
-      4 of 50 cases executed manually (T-X03, T-M07, T-M08, T-D04 — all
-      passed, cross-verified by hand); none are automated. The remaining
-      cases are still a manual checklist only, never run. Priority if resumed: the
-      other P0/P1-adjacent cases first (EC-08 duplicate rows, EC-19 large
-      dataset, EC-24 malformed CSV).
+      76 cases. Ten are behavioral eval cases (evals/cases/, run by
+      evals/run_evals.py by hand, since each is a real model session); the
+      computation layer's results on the eval fixtures are pinned in
+      evals/expected/ and checked in CI. Each mapped case names its eval
+      on an EVAL line. The rest remain a manual checklist; T-X03, T-M07,
+      T-M08 and T-D04 were also run by hand earlier. Open: two eval cases
+      (mrr-deck-duplicate-month, roas-margin-unknown) carry no
+      test_suite_id yet.
 
 pass_18_notes: >
   Real-world catch, not a supplied audit: a live GA4 property dashboard
@@ -354,6 +373,73 @@ pass_28_notes: >
   test suite brought up to the current behavior, content-diff staleness
   check added to validation, version 0.3.0 with a changelog.
 
+pass_29_notes: >
+  Seven approved behavior additions, each placed in one file and pointed to
+  from the others. data-quality-gate.md: every output echoes each source's
+  exact covered dates and export date, a mismatch with the asked period is a
+  WARNING; one provisional rule replaces the separate reporting-lag cases
+  (click-dated conversions, GA4 updating window, postback delays, open
+  attribution windows, cohort cells), and a change resting only on
+  provisional values caps at MEDIUM; reconciliation gains a platform
+  over-claim line against a first-party record, with an optional
+  self-reported survey tiebreaker. SKILL.md: targets and margin join the
+  batched blocking questions only when a requested number needs them;
+  output-language rule (user's language, English label tokens, locale
+  number formatting, locale-independent computation); "provisional" added
+  as a caveat word. kpi-framework.md: mix vs rate decomposition of a
+  blended rate with a Simpson's-paradox guard and a recomputable example
+  (Kitagawa 1955; Bickel, Hammel & O'Connell 1975). analysis-playbook.md:
+  sample ratio mismatch check before any test, holdout or lift result is
+  read, BLOCKER on mismatch (Fabijan et al., KDD 2019; p < 0.001 labeled a
+  working convention); Not recommended yet list for likely-wanted actions
+  the evidence does not support. Dashboard and deck files carry the
+  placements. Seven regression cases added (T-N11 to T-N17).
+
+pass_30_notes: >
+  Computation layer wired into the skill text. SKILL.md: step 1 runs
+  dbcalc profile on every file first and reads locale, period, totals rows,
+  grain, identifiers and hidden sheets from it, ambiguous or conflicting
+  values go to the batched questions; a Computation layer section maps each
+  computation to its command (join-audit answers Join Safety Gate questions
+  4, 5 and 8, the rest stay manual), says how the skill directory is found,
+  and adds a fallback for a copy without scripts/; scripts/README.md joins
+  the references table; the final check gains a no-unstated-currency line
+  and a trace line. data-quality-gate.md: Calc trace subsection (one trace
+  file per analysis, Derived (dbcalc), hand rows, where the trace shows);
+  instruction-like cells reported by location only, text withheld; the
+  unstated-currency rule now forbids any symbol or code. analysis-playbook.md:
+  contribution analysis for additive totals (standard additive
+  decomposition; 50% stop and 25% no-single-driver labeled working
+  conventions), routing of "why did X move" to drivers or decompose, and the
+  Step 2 example corrected to the Newcombe interval (Newcombe 1998).
+  dashboard-blueprints.md: ninth QA check, Trace integrity, and a "How each
+  number was computed" section. presentation-blueprints.md: trace table in
+  Methodology, trace ids allowed in notes. kpi-framework.md: pointer only.
+  Four regression cases added (T-N18 to T-N21).
+
+pass_31_notes: >
+  Regression audit of the pass 29-30 text and the worked example. Fixed:
+  profile ambiguities join the batched questions only when a number
+  depends on them; output-language rule names which fixed phrases
+  translate and which tokens stay English, the trace renders in the
+  output language, the CLDR source moved to analysis-playbook.md;
+  rule 14 carves out the over-claim line; "SRM not checked" is UNTESTED
+  and the provisional cap reaches the confidence table and the
+  CRITICAL/HIGH definitions; one fan-out statistic per side for join
+  question 8; "Not recommended yet" scoped to answers, dashboards and
+  decks, not pure reconciliations. From the worked example: Template B
+  takes channel-level files with spend on paid channels, H needs no
+  spend at all; a full-population before/after rate is NOT APPLICABLE
+  like a total (noise read from the series' history and the trend gate),
+  UNTESTED kept for tests that could not run, mix effects take the
+  outcome of the change they split; opportunity sizing without margin is
+  revenue, not profit; layout D's eyebrow lost its causal verb; long
+  traces are trimmed to the figures shown. SKILL.md shrank (computation
+  table moved to scripts/README.md, final check reduced to pointers) and
+  its description now claims marketing workbooks and Turkish triggers.
+  scripts/README.md joins the consolidated build. Five regression cases
+  added (T-N22 to T-N26).
+
 decisions_deferred_not_findings:
   - id: auto-mode
     note: >
@@ -363,12 +449,13 @@ decisions_deferred_not_findings:
       rediscovered as if new.
 
 last_consolidated_build:
-  pass: 28
-  date: 2026-11-10
-  word_count: 43494
+  pass: 31
+  date: 2026-11-14
+  word_count: 52254
   note: >
     Built by scripts/build_consolidated.sh — verbatim concatenation of
-    SKILL.md + the 6 reference files, Part headers added. No hand-condensed
+    SKILL.md + the 6 reference files + scripts/README.md, Part headers
+    added. No hand-condensed
     sections anymore, so nothing to mirror by hand. Changelog still omitted.
 ```
 

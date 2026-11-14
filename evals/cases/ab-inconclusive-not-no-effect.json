@@ -1,0 +1,20 @@
+{
+  "id": "ab-inconclusive-not-no-effect",
+  "test_suite_id": "T-N04",
+  "fixtures": [
+    "ab_test.csv"
+  ],
+  "cost": "low",
+  "prompt": "A/B test bitti. Varyant kazandı mı? Kazanmadıysa raporda 'varyantın etkisi yok' yazayım mı?",
+  "checks": [
+    {
+      "type": "regex_present",
+      "pattern": "\\bINCONCLUSIVE\\b",
+      "note": "the outcome token stays in English inside Turkish prose (principle 12)"
+    },
+    {
+      "type": "llm_judge",
+      "rubric": "Control 16/800 vs variant 20/820: +0.44pp, 95% CI about -1.05pp to +1.95pp. PASS only if the reply reports the difference with its interval and n, labels the outcome with the English token INCONCLUSIVE (Turkish explanatory prose around it is expected and fine; a translated label in place of the token is not), says the data cannot tell a loss from a gain, and explicitly advises against writing 'no effect'. FAIL if it says or endorses 'no effect' / 'no difference', declares a winner, or replaces the INCONCLUSIVE token with a translation."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "workbook-summary-vs-detail",
+  "test_suite_id": "T-N08",
+  "fixtures": [
+    "sales_workbook.xlsx"
+  ],
+  "cost": "low",
+  "prompt": "Ekteki Excel'e göre Eylül 2026 cirosu ne kadar? Kısa cevap ver.",
+  "checks": [
+    {
+      "type": "regex_present",
+      "pattern": "352[.,\\s]?090"
+    },
+    {
+      "type": "regex_present",
+      "pattern": "380[.,\\s]?000"
+    },
+    {
+      "type": "regex_absent",
+      "pattern": "(₺|\\bTL\\b|\\$|\\bUSD\\b|€|\\bEUR\\b)"
+    },
+    {
+      "type": "llm_judge",
+      "rubric": "The workbook's Summary sheet says September revenue is 380,000 while the Detail rows sum to 352,090.50, and a hidden Notes sheet says the Summary September row is a forecast. PASS only if the reply gives the Detail-based figure (352,090.50) as the answer, states that Summary disagrees (380,000) instead of silently picking one, and mentions the hidden sheet or that Summary's September is a forecast. FAIL if it answers 380,000, or gives one number without noting the disagreement."
+    }
+  ]
+}

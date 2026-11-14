@@ -1,0 +1,27 @@
+{
+  "id": "anomaly-two-days",
+  "maps_to": "T-M07",
+  "description": "Two days of data: both anomaly scans report not run, with the history they need.",
+  "argv": [
+    "anomaly",
+    "exec_2days.csv",
+    "--date-col",
+    "date",
+    "--metric-col",
+    "revenue"
+  ],
+  "assert": [
+    {
+      "path": "series.0.rolling_sigma.run",
+      "equals": false
+    },
+    {
+      "path": "series.0.rolling_sigma.reason",
+      "equals": "not run: insufficient history (need >=22 dates, have 2 dates present over a 2-day calendar span)"
+    },
+    {
+      "path": "series.0.same_weekday.run",
+      "equals": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "stats-srm-paper-example",
+  "maps_to": "T-N14",
+  "description": "821,588 vs 815,482 on a 50/50 design (Fabijan et al. 2019): mismatch, BLOCKER.",
+  "argv": [
+    "stats",
+    "srm",
+    "--counts",
+    "821588,815482",
+    "--ratios",
+    "50,50"
+  ],
+  "assert": [
+    {
+      "path": "mismatch",
+      "equals": true
+    },
+    {
+      "path": "severity",
+      "equals": "BLOCKER"
+    },
+    {
+      "path": "p_value",
+      "lt": 2e-06
+    }
+  ]
+}

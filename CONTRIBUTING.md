@@ -2,7 +2,7 @@
 
 ## Editing the skill
 
-The skill is `skills/dashboard-builder/SKILL.md` plus its `references/*.md` files. Edit the source files, not `dashboard-builder-consolidated.md` — that file is generated and gets overwritten (see `CLAUDE.md` rule 1).
+The skill is `skills/dashboard-builder/SKILL.md` plus its `references/*.md` files, with `scripts/README.md` documenting the `dbcalc` computation layer. Edit the source files, not `dashboard-builder-consolidated.md` — that file is generated and gets overwritten (see `CLAUDE.md` rule 1).
 
 After any behavioral change:
 
@@ -25,7 +25,7 @@ bash scripts/validate.sh
 python3 -m unittest discover -s tests -v
 ```
 
-Both run in CI (`.github/workflows/validate.yml`) on every PR. `TEST-SUITE-regression-benchmark.md` holds the skill's own end-to-end regression cases (synthetic data only, per `CLAUDE.md` rule 5) — see `MAINTENANCE-LEDGER.md`'s `open_findings` for which cases are still unexecuted.
+Both run in CI (`.github/workflows/validate.yml`) on every PR. `TEST-SUITE-regression-benchmark.md` holds the skill's own end-to-end regression cases (synthetic data only, per `CLAUDE.md` rule 5); a case's EVAL line names the behavioral case in `evals/cases/` (run by hand with `python3 evals/run_evals.py --case <id>`) or the pinned result in `evals/expected/` (checked in CI) that covers it. `MAINTENANCE-LEDGER.md`'s `open_findings` says what is still unmapped.
 
 ## Language
 

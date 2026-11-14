@@ -1,0 +1,36 @@
+{
+  "id": "profile-sales-workbook",
+  "maps_to": "T-N08",
+  "description": "Workbook: Summary disagrees with the sum of Detail rows; hidden Notes sheet inventoried; Summary carries a Total row.",
+  "argv": [
+    "profile",
+    "sales_workbook.xlsx"
+  ],
+  "requires": "openpyxl",
+  "assert": [
+    {
+      "path": "sheets.2.sheet",
+      "equals": "Notes"
+    },
+    {
+      "path": "sheets.2.state",
+      "equals": "hidden"
+    },
+    {
+      "path": "cross_sheet_sums.1.column",
+      "equals": "revenue"
+    },
+    {
+      "path": "cross_sheet_sums.1.match",
+      "equals": false
+    },
+    {
+      "path": "cross_sheet_sums.1.sums.1.sum_excl_totals",
+      "approx": 1075425.25
+    },
+    {
+      "path": "tables.0.totals_rows.0.reason",
+      "equals": "total_label"
+    }
+  ]
+}

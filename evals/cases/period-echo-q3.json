@@ -1,0 +1,19 @@
+{
+  "id": "period-echo-q3",
+  "test_suite_id": "T-N11",
+  "fixtures": [
+    "channel_daily.csv"
+  ],
+  "cost": "low",
+  "prompt": "2026 Q3 performansını özetle: hangi kanal büyüdü, hangisi geriledi?",
+  "checks": [
+    {
+      "type": "regex_present",
+      "pattern": "(?i)(2026-08-01|0?1\\.0?8\\.2026|1 Ağustos|1 Ağu|Aug(ust)? 1)"
+    },
+    {
+      "type": "llm_judge",
+      "rubric": "The rows run 2026-08-01 to 2026-10-31, but Q3 2026 is July to September. PASS only if the reply echoes the covered period, warns before the first figure that July 2026 has no rows (Q3 only partly covered: August and September), keeps the October rows out of every Q3 figure (excluded, or shown separately and labeled as outside Q3), labels the Q3 figures as covering August-September only, and does not extrapolate July. FAIL if it presents the numbers as full-Q3 results, includes October in a Q3 total or growth figure, or invents July."
+    }
+  ]
+}

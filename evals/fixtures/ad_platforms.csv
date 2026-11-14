@@ -1,0 +1,10 @@
+date_start,date_end,platform,campaign,spend,conversions,conversion_value,attribution_window
+2026-10-01,2026-10-31,Meta,Meta campaign 1,12000,410,30100,"7-day click, 1-day view"
+2026-10-01,2026-10-31,Meta,Meta campaign 2,8000,260,19800,"7-day click, 1-day view"
+2026-10-01,2026-10-31,Meta,Meta campaign 3,5000,150,11900,"7-day click, 1-day view"
+2026-10-01,2026-10-31,Google Ads,Google campaign 1,15000,380,41200,30-day click
+2026-10-01,2026-10-31,Google Ads,Google campaign 2,6000,170,15100,30-day click
+2026-10-01,2026-10-31,Google Ads,Google campaign 3,4000,90,8800,30-day click
+2026-10-01,2026-10-31,TikTok,TikTok campaign 1,7000,120,12400,1-day click
+2026-10-01,2026-10-31,TikTok,TikTok campaign 2,3000,60,5900,1-day click
+2026-10-01,2026-10-31,TikTok,TikTok campaign 3,2000,35,3100,1-day click

@@ -1,0 +1,29 @@
+{
+  "id": "mrr-deck-duplicate-month",
+  "test_suite_id": "T-D05",
+  "related_test_suite_ids": [
+    "T-C04"
+  ],
+  "fixtures": [
+    "mrr_monthly.csv"
+  ],
+  "cost": "high",
+  "prompt": "Bu MRR verisinden yönetim kurulu için 6-7 slaytlık bir sunum hazırla.",
+  "checks": [
+    {
+      "type": "regex_present",
+      "pattern": "(?i)(duplicat|mükerrer|tekrar|iki kez|çift kayıt|iki satır|two rows)"
+    },
+    {
+      "type": "file_glob_exists",
+      "glob": "**/*.pptx",
+      "soft": true
+    },
+    {
+      "type": "llm_judge",
+      "rubric": "The file lists month 2026-06 twice (identical rows). PASS only if the reply detects the duplicated month as a data-quality issue, does not count June twice in any total or trend, and either builds the deck or states plainly that no .pptx was produced. FAIL if the duplicate goes unmentioned or June is double-counted."
+    }
+  ],
+  "timeout_s": 2400,
+  "build_scripts": true
+}

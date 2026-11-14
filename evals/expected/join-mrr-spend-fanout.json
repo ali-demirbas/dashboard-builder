@@ -1,0 +1,30 @@
+{
+  "id": "join-mrr-spend-fanout",
+  "maps_to": "T-D05",
+  "description": "Joining the MRR file (duplicated month) to a month x channel spend file on month: many-to-many, rows after exceed both inputs.",
+  "argv": [
+    "join-audit",
+    "mrr_monthly.csv",
+    "spend_by_month.csv",
+    "--keys",
+    "month"
+  ],
+  "assert": [
+    {
+      "path": "cardinality",
+      "equals": "many-to-many"
+    },
+    {
+      "path": "mechanical_verdict",
+      "equals": "UNSAFE"
+    },
+    {
+      "path": "rows_after.inner",
+      "equals": 26
+    },
+    {
+      "path": "fan_out.exceeds_both_inputs",
+      "equals": true
+    }
+  ]
+}

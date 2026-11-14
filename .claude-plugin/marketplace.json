@@ -3,6 +3,9 @@
   "owner": {
     "name": "Ali Demirbaş"
   },
+  "metadata": {
+    "description": "Marketplace for dashboard-builder, a Claude Code skill that turns marketing and business performance exports (CSV, XLSX, JSON, PDF) into KPI analysis, cross-source reconciliation, and executive dashboards or decks, with a comparability engine and a deterministic computation layer underneath."
+  },
   "plugins": [
     {
       "name": "dashboard-builder",
