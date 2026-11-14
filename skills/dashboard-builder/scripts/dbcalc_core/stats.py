@@ -374,10 +374,10 @@ def srm(observed, ratios=None, threshold=SRM_THRESHOLD):
         ratios = [1.0] * k
     if len(ratios) != k or any(r <= 0 for r in ratios):
         raise ValueError("ratios must be positive, one per arm")
-    total = float(sum(observed))
-    rsum = float(sum(ratios))
+    total = float(math.fsum(observed))
+    rsum = float(math.fsum(ratios))
     expected = [total * r / rsum for r in ratios]
-    chi2 = sum((o - e) ** 2 / e for o, e in zip(observed, expected))
+    chi2 = math.fsum((o - e) ** 2 / e for o, e in zip(observed, expected))
     p = chi2_sf(chi2, k - 1)
     return {
         "observed": list(observed), "expected": expected,

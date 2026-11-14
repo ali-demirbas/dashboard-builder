@@ -40,6 +40,7 @@ missing rate is set equal to its observed rate, so its whole contribution is
 mix (stated in the output). Simpson's-paradox flag: every segment observed in
 both periods moved one way and the blended rate moved the other.
 """
+import math
 import os
 import re
 
@@ -144,10 +145,10 @@ def decompose(path, segment_col, num_col, den_col, period_col, base, compare, sh
                 a = agg.setdefault(s_i, [[0.0, 0.0], [0.0, 0.0]])
                 a[p][0] += num[i] or 0.0
                 a[p][1] += den[i] or 0.0
-    D0 = sum(a[0][1] for a in agg.values())
-    D1 = sum(a[1][1] for a in agg.values())
-    N0 = sum(a[0][0] for a in agg.values())
-    N1 = sum(a[1][0] for a in agg.values())
+    D0 = math.fsum(a[0][1] for a in agg.values())
+    D1 = math.fsum(a[1][1] for a in agg.values())
+    N0 = math.fsum(a[0][0] for a in agg.values())
+    N1 = math.fsum(a[1][0] for a in agg.values())
     if D0 == 0 or D1 == 0:
         raise tabular.InputError("Not meaningful — zero %s in one period" % den_col)
     R0, R1 = N0 / D0, N1 / D1

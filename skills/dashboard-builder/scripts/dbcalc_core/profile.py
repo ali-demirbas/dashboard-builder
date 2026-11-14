@@ -8,6 +8,7 @@ order) and §Handling PII (identifier-like columns reported by count and type,
 never by value), plus analysis-playbook.md §Ingestion (header not on row 1,
 duplicate headers, non-UTF-8 fallback).
 """
+import math
 import datetime as _dt
 import itertools
 import os
@@ -199,19 +200,19 @@ def profile_table(tbl, hidden=False):
                 v = vals[i]
                 if v is None:
                     continue
-                s = sum(x or 0.0 for k, x in enumerate(vals) if k not in excluded)
+                s = math.fsum(x or 0.0 for k, x in enumerate(vals) if k not in excluded)
                 comp.append({"column": name, "stated": v, "sum_of_rows": s,
                              "matches": abs(v - s) <= max(0.05, 1e-4 * abs(s))})
             t["stated_vs_rows"] = comp
     # measure sums excluding totals rows (for cross-sheet comparison)
-    sums = {name: sum(v or 0.0 for k, v in enumerate(vals) if k not in excluded)
+    sums = {name: math.fsum(v or 0.0 for k, v in enumerate(vals) if k not in excluded)
             for name, vals in measure_cols.items()}
     for c in cols:
         vals = c.get("_values")
         if vals is not None and not c["identifier_like"]:
             vv = [v for k, v in enumerate(vals) if v is not None and k not in excluded]
             if vv:
-                c["min"], c["max"], c["sum_excl_totals"] = min(vv), max(vv), sum(vv)
+                c["min"], c["max"], c["sum_excl_totals"] = min(vv), max(vv), math.fsum(vv)
     exact_dups = 0
     seen = {}
     for r in tbl.rows:

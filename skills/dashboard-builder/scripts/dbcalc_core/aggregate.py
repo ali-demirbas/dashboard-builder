@@ -11,6 +11,7 @@ A ratio is always a ratio of sums, never a mean of row-level ratios
 (kpi-framework.md: a blended rate weights each row by its denominator).
 Citation key ``aggregate``.
 """
+import math
 import os
 import statistics
 
@@ -96,8 +97,8 @@ def aggregate(path, metrics, agg="sum", den=None, group_by=None, filters=None, p
                 vals = [i for i in idx if m is None or nums[m][i] is not None]
                 rec.update({"value": len(vals), "rows": len(idx)})
             elif agg == "ratio":
-                num_sum = sum(nums[m][i] for i in idx if nums[m][i] is not None)
-                den_sum = sum(nums[den][i] for i in idx if nums[den][i] is not None)
+                num_sum = math.fsum(nums[m][i] for i in idx if nums[m][i] is not None)
+                den_sum = math.fsum(nums[den][i] for i in idx if nums[den][i] is not None)
                 rec.update({"value": (num_sum / den_sum) if den_sum else None, "num_sum": num_sum,
                             "den_sum": den_sum, "rows": len(idx)})
                 if not den_sum:

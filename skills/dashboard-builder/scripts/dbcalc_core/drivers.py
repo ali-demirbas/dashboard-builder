@@ -24,6 +24,7 @@ any average or percentage) does not: its change is a rate effect plus a mix
 effect, so a ratio metric is sent to ``decompose`` (Kitagawa 1955) instead.
 Citation key ``contribution``.
 """
+import math
 import os
 
 from . import checks, tabular
@@ -65,7 +66,7 @@ def _analyse(rows, dim_vals, metric, delta_total, min_share, cum_stop):
         cum += r["share_of_total_change"]
         explain.append(r["value"])
     top_share = same[0]["share_of_total_change"] if same else None
-    gross = sum(abs(r["delta"]) for r in items)
+    gross = math.fsum(abs(r["delta"]) for r in items)
     ratio = (gross / abs(delta_total)) if delta_total else None
     offsetting = ratio is not None and ratio > OFFSETTING_RATIO
     res = {
@@ -137,8 +138,8 @@ def drivers(path, metric_col, period_col, base, compare, dims, sheet=None, min_s
     if not any(m0) or not any(m1):
         raise tabular.InputError("no rows matched --base or --compare in column %r" % period_col)
     idx = [i for i in range(len(tbl.rows)) if i not in excl and metric[i] is not None]
-    T0 = sum(metric[i] for i in idx if m0[i])
-    T1 = sum(metric[i] for i in idx if m1[i])
+    T0 = math.fsum(metric[i] for i in idx if m0[i])
+    T1 = math.fsum(metric[i] for i in idx if m1[i])
     dT = T1 - T0
 
     def rows_for(dim, filt=None):

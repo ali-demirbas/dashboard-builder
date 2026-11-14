@@ -7,6 +7,7 @@
   numbers only, never the matched values.
 - Instruction-like text in cells: data-quality-gate.md §Untrusted input.
 """
+import math
 import re
 import unicodedata
 
@@ -212,7 +213,7 @@ def total_rows(label_cols, numeric_cols, group_col=None):
     def sum_rows(idx, label):
         if len(idx) < (3 if need == 2 else 4) or not cols:
             return
-        sums = [sum(c[i] or 0.0 for i in idx if i not in found) for c in cols]
+        sums = [math.fsum(c[i] or 0.0 for i in idx if i not in found) for c in cols]
         for i in idx:
             if i in found:
                 continue
@@ -330,7 +331,7 @@ def segment_exclusions(label_cols, numeric_cols, period_keys, exclude_labels=Non
             appear.setdefault(label_of(i), set()).add(g)
         if len(live) < 3:
             continue
-        sums = [sum(c[i] or 0.0 for i in live) for c in cols]
+        sums = [math.fsum(c[i] or 0.0 for i in live) for c in cols]
         for i in live:
             checked, ok = 0, True
             for c, tot in zip(cols, sums):
